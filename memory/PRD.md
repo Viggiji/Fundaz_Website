@@ -18,6 +18,10 @@ Single-page landing site for FUNDAZ, the math/science/logic domain of Aaruush (S
    - **A Arena** — Treasure Hunt & Mystery Room split cards, how-it-works, past themes.
    - **Z Zenith** — notable speakers/guests grid.
 4. Navbar (letter links + active underline + mobile sheet), footer, noise overlay, grayscale imagery.
+5. **Preloader — "The Collision"** — canvas animation on every load: wireframe geometric clusters spiral inward (~2s), collide into a flash + big-bang particle explosion with universe-wide shockwave rings (~1.5s), then dissolves to reveal the site. Click-to-skip; respects prefers-reduced-motion; scroll locked during play.
+6. **Hero orbit v2** — letters revolve ON the atom's 3 electron ellipses (2 per orbit, parametric motion via useAnimationFrame) with pseudo-3D depth (scale/z-index/opacity), hover pauses motion.
+7. **Domain restructure** — each of the 3 domain events spans all 3 fest days; tabs are per-event, each showing three day-round cards (Day 1/2/3 = Round 1/2/Finale).
+8. **Arena site links** — subtle placeholder microsite links (href="#") for Treasure Hunt & Mystery Room, marked in content.js for later replacement.
 
 ## Design System
 - HSL tokens in index.css: bg 220 12% 5%, primary silver 210 16% 80%, accent 207 22% 68%.
