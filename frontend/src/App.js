@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "@/App.css";
 import { Toaster } from "@/components/ui/sonner";
+import { Preloader } from "@/components/Preloader";
 import { Starfield } from "@/components/Starfield";
 import { Navbar } from "@/components/Navbar";
 import { AtomHero } from "@/components/AtomHero";
@@ -16,6 +17,7 @@ import { Footer } from "@/components/Footer";
 function App() {
   // -1 = hero (companion hidden), 0..5 = F U N D A Z sections
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const sections = document.querySelectorAll("[data-letter-index]");
@@ -48,6 +50,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen bg-background">
+      {loading && <Preloader onComplete={() => setLoading(false)} />}
       <Starfield />
       <div className="noise-overlay" />
       <Navbar activeIndex={activeIndex} />

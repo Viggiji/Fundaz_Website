@@ -102,9 +102,33 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the FUNDAZ landing page (single-page React app). It's a dark silver space-themed fest landing page with an interactive atom hero, six letter sections (F/U/N/D/A/Z), a morphing companion letter, and a mock registration flow."
+user_problem_statement: "Regression + new-feature test of the FUNDAZ landing page. Three NEW features added: 1) PRELOADER with animation and click-to-skip, 2) HERO ORBIT CHANGE - letters now revolve ALONG the 3 elliptical orbits, 3) DOMAIN SECTION RESTRUCTURE - 3 tabs by event name with day-round cards, 4) ARENA SITE LINKS - placeholder links for treasure-hunt and mystery-room."
 
 frontend:
+  - task: "Preloader with animation and click-to-skip"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Preloader.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "NEW FEATURE - Preloader works perfectly. Full-screen overlay with canvas animation (wireframe clusters spiral inward ~2s, then flash + particle explosion ~1.5s). Status text 'F U N D A Z — Igniting the nucleus' displays during converge phase. Click-to-skip functionality works (overlay fades out quickly on click). Body scroll is locked during preloader (overflow: hidden) and unlocked after. Overlay automatically disappears after ~3.5s animation and reveals hero section. All data-testids present: preloader-overlay, preloader-canvas, preloader-status."
+
+  - task: "Hero orbit letters revolve along elliptical orbits"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/AtomHero.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "NEW FEATURE - Hero orbit letters now revolve ALONG the 3 elliptical orbits (not outer circle). All 6 letter buttons (F, U, N, D, A, Z) found with correct data-testids (hero-orbit-letter-f through -z). Letters use parametric equations for ellipse positioning with 3 different tilts (0°, 60°, 120°). Hover on orbit system pauses motion correctly. Letters are clickable and scroll to correct sections (tested D → Domain section). Note: Playwright requires force=True for clicks due to continuous animation, but real users can click without issues."
+      
   - task: "Hero section with atom orbit and 6 letter buttons"
     implemented: true
     working: true
@@ -175,7 +199,7 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "Letter companion (MetaMask-fox style) works excellently. Hidden on hero, appears when scrolled into sections. SVG path morphs between letter shapes using flubber interpolation (verified F→U: path changed from 69 chars to 53 chars). Label changes correctly (Flagship → Unearthed). Companion alternates sides as designed."
+        comment: "REGRESSION TEST PASSED - Letter companion (MetaMask-fox style) works excellently. Hidden on hero (opacity: 0), appears when scrolled into sections (opacity: 1). SVG path morphs between letter shapes using flubber interpolation. Verified F→U→N morphing: paths change correctly, labels update (Flagship → Unearthed → Now). Companion alternates sides as designed."
 
   - task: "Flagship section rendering"
     implemented: true
@@ -213,7 +237,7 @@ frontend:
         agent: "testing"
         comment: "Now section renders all 6 event cards (main-quiz, treasure-hunt, mystery-room, cryptic-conundrum, fermi-files, paradox-arena). 3 external links to aaruush.org found. 3 register buttons for domain events found."
 
-  - task: "Domain section with tabs and accordion"
+  - task: "Domain section with tabs by event name and day-round cards"
     implemented: true
     working: true
     file: "/app/frontend/src/components/sections/DomainEvents.jsx"
@@ -223,9 +247,9 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "Domain section renders with 3 tabs (day-1, day-2, day-3). Tab switching works correctly (tested Day 2 → fermi-files panel visible). Each tab has goto-register button (only visible in active tab). Past events accordion (2024, 2023, 2022) expands correctly."
+        comment: "NEW FEATURE - Domain section restructured with 3 tabs BY EVENT NAME: Cryptic Conundrum, The Fermi Files, Paradox Arena (data-testids: domain-tab-cryptic-conundrum, domain-tab-fermi-files, domain-tab-paradox-arena). Tab switching works perfectly. Each event panel (domain-event-panel-{id}) displays event description and THREE day-round cards with correct data-testids: domain-round-{id}-0, domain-round-{id}-1, domain-round-{id}-2 showing Day 1/Day 2/Day 3 with round names and dates. Each panel has goto-register button (domain-goto-register-{id}) that scrolls to Now section. Past events accordion still works (domain-past-2024 expands correctly)."
 
-  - task: "Arena section rendering"
+  - task: "Arena section with activity site links"
     implemented: true
     working: true
     file: "/app/frontend/src/components/sections/Arena.jsx"
@@ -235,7 +259,7 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "Arena section found and renders with activity cards."
+        comment: "NEW FEATURE - Arena section now has placeholder site links for both activities. Treasure Hunt site link (data-testid: arena-site-link-treasure-hunt) displays 'Treasure Hunt site' with href='#'. Mystery Room site link (data-testid: arena-site-link-mystery-room) displays 'Mystery Room site' with href='#'. Both links are visible and properly styled as subtle placeholder links. Arena section renders with both activity cards (treasure-hunt and mystery-room) showing images, descriptions, 'How it works' sections, and past year themes."
 
   - task: "Zenith section rendering"
     implemented: true
@@ -259,7 +283,7 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "Registration flow works perfectly. Dialog opens when clicking register button. Empty form submission shows validation errors (name: 'Required', email: 'Enter a valid email'). Dialog stays open after validation errors. Valid form submission (name='Test User', regno='RA231100', phone='9876543210', email='test@srmist.edu.in', team='Testers') closes dialog, saves to localStorage correctly, and shows success toast 'Registered for Cryptic Conundrum'."
+        comment: "REGRESSION TEST PASSED - Registration flow works perfectly. Dialog opens when clicking register button (tested with fermi-files). Form accepts realistic data (name='Arjun Sharma', regno='RA2111003010456', phone='9876543210', email='arjun.sharma@srmist.edu.in'). Dialog closes after submission, saves to localStorage correctly (fundaz_registrations), and shows success toast 'Registered for The Fermi Files'."
 
   - task: "No console errors or broken images"
     implemented: true
@@ -271,17 +295,17 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "No console errors detected. No critical console warnings. No failed network requests. No broken images. No horizontal overflow on desktop (1920x1080) or mobile (390x844)."
+        comment: "REGRESSION TEST PASSED - No critical console errors detected. Only one non-critical failed request: CDN RUM endpoint (Cloudflare monitoring script) which doesn't affect functionality. No broken images. No horizontal overflow on desktop (1920x1080) or mobile (390x844). All images load correctly."
 
 metadata:
   created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 1
+  version: "2.0"
+  test_sequence: 2
   run_ui: true
 
 test_plan:
   current_focus:
-    - "All tests completed successfully"
+    - "All new features and regression tests completed successfully"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
@@ -289,3 +313,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Comprehensive testing completed for FUNDAZ landing page. All major features working correctly. Hero atom orbit, navbar, letter companion morphing, all 6 sections, mock registration flow, and mobile responsiveness all tested and passing. Minor scroll positioning offset (0.25px) is due to browser rounding and not a functional issue. No critical bugs found. Application is ready for production."
+  - agent: "testing"
+    message: "NEW FEATURE TESTING COMPLETED (2025-07-10): Tested 3 new features + regression. 1) PRELOADER: Works perfectly with animation, click-to-skip, and scroll lock. 2) HERO ORBIT CHANGE: Letters now revolve along 3 elliptical orbits, remain clickable, hover pauses motion. 3) DOMAIN SECTION RESTRUCTURE: 3 event tabs by name with day-round cards working correctly. 4) ARENA SITE LINKS: Both placeholder links present and visible. REGRESSION: Letter companion morphing (F→U→N), registration dialog, no console errors, no overflow - all passing. NO CRITICAL ISSUES FOUND. All features working as specified in review request."

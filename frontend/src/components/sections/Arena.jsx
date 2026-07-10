@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -66,6 +67,14 @@ export const Arena = () => (
                         <span className="text-muted-foreground">{y.theme}</span>
                       </div>
                     ))}
+                  </div>
+                  {/* subtle event microsite link (placeholder for now) */}
+                  <div className="mt-5 border-t border-border pt-4">
+                    <Button variant="ghostSilver" size="sm" className="h-8 px-2 font-mono-tech text-[10px] uppercase tracking-[0.2em]" asChild data-testid={`arena-site-link-${act.id}`}>
+                      <a href={act.site} title="Event microsite — link coming soon">
+                        {act.name} site <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </Button>
                   </div>
                 </div>
               </CardContent>

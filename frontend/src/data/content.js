@@ -115,24 +115,24 @@ export const NOW_EVENTS = [
     id: "cryptic-conundrum",
     name: "Cryptic Conundrum",
     type: "Domain Event",
-    date: "Day 1 · Sept 12",
-    blurb: "Cipher-breaking sprint — Caesar to steganography, in teams of two against the clock.",
+    date: "Sept 12 – 14 · 3 rounds",
+    blurb: "Cipher-breaking campaign — Caesar to steganography. A new round every day, one champion team.",
     action: "register",
   },
   {
     id: "fermi-files",
     name: "The Fermi Files",
     type: "Domain Event",
-    date: "Day 2 · Sept 13",
-    blurb: "Estimation warfare. How many piano tuners in Chennai? Defend your logic before the panel.",
+    date: "Sept 12 – 14 · 3 rounds",
+    blurb: "Estimation warfare across three days. How many piano tuners in Chennai? Defend your logic before the panel.",
     action: "register",
   },
   {
     id: "paradox-arena",
     name: "Paradox Arena",
     type: "Domain Event",
-    date: "Day 3 · Sept 14",
-    blurb: "Rapid-fire critical thinking showdown — riddles, lateral traps and live eliminations on stage.",
+    date: "Sept 12 – 14 · 3 rounds",
+    blurb: "Rapid-fire critical thinking showdown — daily eliminations until one mind is left standing on stage.",
     action: "register",
   },
 ];
@@ -140,51 +140,45 @@ export const NOW_EVENTS = [
 // ---------------- D — DOMAIN EVENTS ----------------
 export const DOMAIN_EVENTS = {
   intro:
-    "Every year FUNDAZ crafts three brand-new domain events — they exist for one edition only, then retire into legend. Here is the 2025 lineup, day by day.",
+    "Every year FUNDAZ crafts three brand-new domain events — they exist for one edition only, then retire into legend. Each event runs across all three days of the fest, with every day being a different round.",
   current: [
     {
       id: "cryptic-conundrum",
-      day: "Day 1",
-      date: "Sept 12",
       name: "Cryptic Conundrum",
+      dates: "Sept 12 – 14",
       image: "skeletonKey",
       description:
-        "A cipher-breaking sprint through the history of secret writing. Teams of two race through Caesar shifts, Vigenère grids, pigpen glyphs and a final steganography gauntlet hidden in plain sight.",
-      schedule: [
-        { time: "10:00", item: "Briefing & cipher kit handout" },
-        { time: "10:30", item: "Sprint begins — 8 sealed envelopes" },
-        { time: "12:30", item: "Final gauntlet: the hidden message" },
-        { time: "13:30", item: "Podium & debrief" },
+        "A cipher-breaking campaign through the history of secret writing. Teams of two survive three escalating rounds — Caesar shifts and Vigenère grids on day one, hidden-in-plain-sight steganography on day two, and an unbroken final cipher on day three.",
+      rounds: [
+        { day: "Day 1", date: "Sept 12", name: "Round 1 — Cipher Sprint", detail: "Eight sealed envelopes of classical ciphers against the clock. Top 16 teams advance." },
+        { day: "Day 2", date: "Sept 13", name: "Round 2 — The Stego Vault", detail: "Messages hidden inside images, audio and campus posters. Find them before your rivals do." },
+        { day: "Day 3", date: "Sept 14", name: "Finale — The Unbreakable", detail: "One custom cipher, one hour, no hints. First correct plaintext takes the title." },
       ],
     },
     {
       id: "fermi-files",
-      day: "Day 2",
-      date: "Sept 13",
       name: "The Fermi Files",
+      dates: "Sept 12 – 14",
       image: "treasureMaps",
       description:
-        "Estimation warfare inspired by Enrico Fermi. No internet, no calculators — just structured guessing. Teams build order-of-magnitude answers to absurd questions and defend their reasoning before a live panel.",
-      schedule: [
-        { time: "11:00", item: "Case files distributed" },
-        { time: "11:20", item: "Round 1 — solo estimations" },
-        { time: "12:15", item: "Round 2 — panel defence" },
-        { time: "14:00", item: "The Final File & results" },
+        "Estimation warfare inspired by Enrico Fermi. No internet, no calculators — just structured guessing. Three days of building order-of-magnitude answers to absurd questions and defending the logic behind them.",
+      rounds: [
+        { day: "Day 1", date: "Sept 12", name: "Round 1 — Cold Estimates", detail: "Solo written round: 12 impossible questions, scored on the power of ten you land in." },
+        { day: "Day 2", date: "Sept 13", name: "Round 2 — Panel Defence", detail: "Qualified teams defend their reasoning live before a panel that loves poking holes." },
+        { day: "Day 3", date: "Sept 14", name: "Finale — The Final File", detail: "One monster estimation built in stages on stage. Cleanest chain of logic wins." },
       ],
     },
     {
       id: "paradox-arena",
-      day: "Day 3",
-      date: "Sept 14",
       name: "Paradox Arena",
+      dates: "Sept 12 – 14",
       image: "stageLights",
       description:
-        "The closing showdown. Contestants face rapid-fire riddles, self-referencing puzzles and lateral-thinking traps on stage — answer in seconds or take the walk. Last mind standing takes the Arena.",
-      schedule: [
-        { time: "15:00", item: "Open qualifiers — lightning riddles" },
-        { time: "16:00", item: "Knockout brackets begin" },
-        { time: "17:30", item: "Grand finale — sudden death" },
-        { time: "18:00", item: "Crowning of the Arena champion" },
+        "The rapid-fire critical thinking showdown. Riddles, self-referencing puzzles and lateral-thinking traps — answer in seconds or take the walk. Three days of eliminations until one mind is left standing.",
+      rounds: [
+        { day: "Day 1", date: "Sept 12", name: "Round 1 — Lightning Riddles", detail: "Open qualifiers: 90 seconds per riddle, sudden elimination on two misses." },
+        { day: "Day 2", date: "Sept 13", name: "Round 2 — The Knockouts", detail: "Head-to-head brackets on stage. Steal your opponent's question, steal their spot." },
+        { day: "Day 3", date: "Sept 14", name: "Finale — Sudden Death", detail: "The last four face the paradox gauntlet. One wrong step ends the run." },
       ],
     },
   ],
@@ -206,6 +200,7 @@ export const ARENA = {
       image: "treasureMaps",
       accentImage: "skeletonKey",
       tag: "Campus-wide · Teams of 4",
+      site: "#", // placeholder — swap with the Treasure Hunt microsite link
       description:
         "The whole of SRMIST becomes the board. Squads decode a chain of interlocking clues that send them sprinting between libraries, labs, canteens and landmarks — every solved clue reveals the next location, and only one squad reaches the final vault first.",
       how: [
@@ -226,6 +221,7 @@ export const ARENA = {
       image: "mysteryRoom",
       accentImage: "escapeNeon",
       tag: "Immersive · Teams of 3–5",
+      site: "#", // placeholder — swap with the Mystery Room microsite link
       description:
         "You are handed a case, then the door closes behind you. Inside is a fully staged scene — evidence, props, red herrings and a story written from scratch for this year only. Piece the narrative together and crack the case before the timer runs out. No two editions have ever shared a plot.",
       how: [
