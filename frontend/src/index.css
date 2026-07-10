@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  FUNDAZ Design System — "Dark Silver / Atomic Space"
+  - Near-black cool charcoal background (deep space)
+  - Silver / platinum primary (metallic sheen)
+  - Muted silver-blue accent (electron glow)
+  - All values HSL, consumed by Tailwind hsl(var(--token))
+*/
+
+@layer base {
+    :root {
+        --background: 220 12% 5%;
+        --foreground: 210 14% 88%;
+        --card: 220 10% 7%;
+        --card-foreground: 210 14% 88%;
+        --popover: 220 11% 7%;
+        --popover-foreground: 210 14% 90%;
+        --primary: 210 16% 80%;
+        --primary-foreground: 220 12% 8%;
+        --secondary: 219 9% 13%;
+        --secondary-foreground: 210 14% 85%;
+        --muted: 219 8% 11%;
+        --muted-foreground: 214 9% 60%;
+        --accent: 207 22% 68%;
+        --accent-foreground: 220 12% 8%;
+        --destructive: 0 62% 46%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 218 9% 17%;
+        --input: 218 9% 19%;
+        --ring: 210 16% 78%;
+        --chart-1: 210 16% 80%;
+        --chart-2: 207 22% 68%;
+        --chart-3: 214 9% 50%;
+        --chart-4: 220 8% 35%;
+        --chart-5: 210 20% 92%;
+        --radius: 0.6rem;
+
+        /* Custom tokens */
+        --silver-bright: 210 22% 90%;
+        --silver-mid: 212 12% 62%;
+        --silver-deep: 218 10% 34%;
+        --gradient-silver: linear-gradient(135deg, hsl(210 18% 84%), hsl(213 11% 58%));
+        --gradient-section: radial-gradient(ellipse 80% 50% at 50% -10%, hsl(212 14% 14% / 0.9), transparent);
+        --shadow-glow: 0 0 42px hsl(210 25% 80% / 0.12);
+        --shadow-elegant: 0 18px 50px -18px hsl(220 30% 2% / 0.85);
+        --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dark {
+        --background: 220 12% 5%;
+        --foreground: 210 14% 88%;
+        --card: 220 10% 7%;
+        --card-foreground: 210 14% 88%;
+        --popover: 220 11% 7%;
+        --popover-foreground: 210 14% 90%;
+        --primary: 210 16% 80%;
+        --primary-foreground: 220 12% 8%;
+        --secondary: 219 9% 13%;
+        --secondary-foreground: 210 14% 85%;
+        --muted: 219 8% 11%;
+        --muted-foreground: 214 9% 60%;
+        --accent: 207 22% 68%;
+        --accent-foreground: 220 12% 8%;
+        --destructive: 0 62% 46%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 218 9% 17%;
+        --input: 218 9% 19%;
+        --ring: 210 16% 78%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Manrope', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+    ::selection {
+        background: hsl(var(--primary) / 0.85);
+        color: hsl(var(--primary-foreground));
+    }
+    ::-webkit-scrollbar {
+        width: 9px;
+    }
+    ::-webkit-scrollbar-track {
+        background: hsl(var(--background));
+    }
+    ::-webkit-scrollbar-thumb {
+        background: hsl(var(--silver-deep));
+        border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--silver-mid));
+    }
+}
+
+@layer utilities {
+    .font-display {
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .font-mono-tech {
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .text-gradient-silver {
+        background: linear-gradient(120deg, hsl(210 22% 93%) 0%, hsl(212 12% 60%) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .bg-gradient-silver {
+        background: var(--gradient-silver);
+    }
+    .bg-gradient-section {
+        background: var(--gradient-section);
+    }
+    .shadow-glow {
+        box-shadow: var(--shadow-glow);
+    }
+    .shadow-elegant {
+        box-shadow: var(--shadow-elegant);
+    }
+    .glass-panel {
+        background: hsl(var(--card) / 0.6);
+        backdrop-filter: blur(14px);
+        border: 1px solid hsl(var(--border) / 0.9);
+    }
+}
+
+/* ---------- Noise / grain overlay ---------- */
+.noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Hero atom / orbit system ---------- */
+@keyframes orbit-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes orbit-spin-rev {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+@keyframes nucleus-pulse {
+    0%, 100% { box-shadow: 0 0 30px hsl(210 25% 80% / 0.18), 0 0 70px hsl(210 25% 80% / 0.07); }
+    50% { box-shadow: 0 0 46px hsl(210 25% 80% / 0.32), 0 0 100px hsl(210 25% 80% / 0.12); }
+}
+
+.orbit-rotator {
+    animation: orbit-spin 52s linear infinite;
+}
+.orbit-counter {
+    animation: orbit-spin-rev 52s linear infinite;
+}
+.orbit-system:hover .orbit-rotator,
+.orbit-system:hover .orbit-counter {
+    animation-play-state: paused;
+}
+
+.orbit-node {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    width: 56px;
+    border-radius: 9999px;
+    border: 1px solid hsl(var(--primary) / 0.4);
+    background: hsl(var(--background) / 0.72);
+    backdrop-filter: blur(8px);
+    color: hsl(var(--foreground));
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 0 18px hsl(210 25% 80% / 0.08);
+}
+.orbit-node:hover {
+    transform: scale(1.18);
+    border-color: hsl(var(--primary));
+    color: hsl(var(--silver-bright));
+    box-shadow: 0 0 30px hsl(210 25% 80% / 0.3);
+}
+.orbit-node:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+}
+
+.atom-ellipse {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--orbit-size) * 0.64);
+    height: calc(var(--orbit-size) * 0.26);
+    margin-left: calc(var(--orbit-size) * -0.32);
+    margin-top: calc(var(--orbit-size) * -0.13);
+    border: 1px solid hsl(var(--primary) / 0.28);
+    border-radius: 50%;
+}
+
+.nucleus-pi {
+    animation: nucleus-pulse 5s ease-in-out infinite;
+}
+
+/* ---------- Companion morphing letter ---------- */
+.companion-letter path {
+    fill: hsl(var(--primary) / 0.09);
+    stroke: hsl(var(--primary) / 0.6);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+}
+.companion-letter {
+    filter: drop-shadow(0 0 22px hsl(210 25% 80% / 0.25));
+}
+
+/* ---------- Misc ---------- */
+.section-ghost-letter {
+    -webkit-text-stroke: 1px hsl(var(--primary) / 0.12);
+    color: transparent;
+    user-select: none;
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
