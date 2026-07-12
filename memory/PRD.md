@@ -29,7 +29,15 @@ Single-page landing site for FUNDAZ, the math/science/logic domain of Aaruush (S
 - Button variants: silver / outlineSilver / ghostSilver + xl size.
 
 ## Status
-MVP complete; fully tested by frontend testing agent (all pass). All content is realistic placeholder data in src/data/content.js — replace freely.
+V3 — Multi-page rebuild complete; fully tested (all pass). All content is realistic placeholder data in src/data/content.js — replace freely.
+
+## V3 Architecture (multi-page)
+- Routes: "/" (landing = atom only, no scroll) + /flagship /unearthed /now /domain /arena /zenith.
+- PageTransition.jsx: cinematic letter transitions (cover → hold/wiggle with charging ring → reveal zoom); π shown when returning home. All navigation (navbar, footer, next-band, orbit letters, cross-page register buttons) goes through useTransitionNav().go(id).
+- ScrollFillCompanion.jsx: fixed page letter fills with "starlight plasma" wave when wheel-scrolling at page bottom (approach zone pre-charges to 30%, drains on scroll-up); at 100% auto-transitions to the next page (Z → home). Click = skip ahead. NextBand.jsx is the editorial fallback CTA.
+- Preloader (immersive v2): 7 wireframe clusters, backdrop stars, 560-particle explosion, 4 shockwave rings, screen shake; plays once per session (sessionStorage fz_preloaded), click-to-skip.
+- Editorial redesign (cards removed): numbered timelines, year rows, marquee stat bands, day-glance strips, full-bleed banners with sticky splits, alternating guest rows.
+- InfiniteMenu (React Bits, gl-matrix) on /unearthed: drag-to-spin WebGL sphere of organiser photos with name/role overlay + placeholder "#" action button; accessible name index below.
 
 ## Possible Next Steps
 - Real backend for domain-event registrations.
