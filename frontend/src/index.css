@@ -218,7 +218,7 @@
     animation: nucleus-pulse 5s ease-in-out infinite;
 }
 
-/* ---------- Companion morphing letter ---------- */
+/* ---------- Companion morphing / fill letter ---------- */
 .companion-letter path {
     fill: hsl(var(--primary) / 0.09);
     stroke: hsl(var(--primary) / 0.6);
@@ -227,6 +227,28 @@
 }
 .companion-letter {
     filter: drop-shadow(0 0 22px hsl(210 25% 80% / 0.25));
+}
+
+/* starlight plasma wave inside the fill letter */
+@keyframes wave-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-32px); }
+}
+.fill-wave {
+    animation: wave-drift 1.5s linear infinite;
+    stroke: none;
+}
+
+/* marquee stats band */
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.marquee-track {
+    animation: marquee-scroll 32s linear infinite;
+}
+.marquee-track:hover {
+    animation-play-state: paused;
 }
 
 /* ---------- Misc ---------- */

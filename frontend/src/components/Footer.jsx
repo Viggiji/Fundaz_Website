@@ -2,9 +2,11 @@ import { Instagram, Linkedin, Twitter, ExternalLink } from "lucide-react";
 import { AtomLogo } from "@/components/AtomLogo";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { LETTERS, scrollToSection } from "@/lib/letterPaths";
+import { LETTERS } from "@/lib/letterPaths";
+import { useTransitionNav } from "@/components/PageTransition";
 
 export const Footer = () => {
+  const { go } = useTransitionNav();
   return (
     <footer className="relative border-t border-border bg-card/40 px-5 py-14 sm:px-8" data-testid="main-footer">
       <div className="mx-auto max-w-6xl">
@@ -41,7 +43,7 @@ export const Footer = () => {
                 {LETTERS.map((l) => (
                   <li key={l.char}>
                     <button
-                      onClick={() => scrollToSection(l.id)}
+                      onClick={() => go(l.id)}
                       className="text-sm text-muted-foreground hover:text-foreground"
                       style={{ transition: "color 0.2s ease" }}
                       data-testid={`footer-link-${l.char.toLowerCase()}`}

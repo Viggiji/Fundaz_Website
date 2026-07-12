@@ -1,0 +1,104 @@
+/* InfiniteMenu — themed for the FUNDAZ dark-silver design system */
+.infinite-menu-wrap #infinite-grid-menu-canvas {
+  cursor: grab;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  outline: none;
+  display: block;
+}
+.infinite-menu-wrap #infinite-grid-menu-canvas:active {
+  cursor: grabbing;
+}
+
+.infinite-menu-wrap .face-title {
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2.6rem);
+  color: hsl(var(--foreground));
+  max-width: 26%;
+  line-height: 1.15;
+}
+.infinite-menu-wrap .face-title.active {
+  opacity: 1;
+  transition: opacity 0.5s ease 0.15s;
+}
+.infinite-menu-wrap .face-title.inactive {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.infinite-menu-wrap .face-description {
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 24%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  text-align: right;
+  line-height: 1.7;
+}
+.infinite-menu-wrap .face-description.active {
+  opacity: 1;
+  transition: opacity 0.5s ease 0.15s;
+}
+.infinite-menu-wrap .face-description.inactive {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.infinite-menu-wrap .action-button {
+  position: absolute;
+  left: 50%;
+  z-index: 10;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  background: var(--gradient-silver);
+  border: 1px solid hsl(var(--border));
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+}
+.infinite-menu-wrap .action-button.active {
+  bottom: 2.6em;
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.5s ease, transform 0.5s ease, bottom 0.5s ease;
+}
+.infinite-menu-wrap .action-button.inactive {
+  bottom: -80px;
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease, bottom 0.12s ease;
+}
+.infinite-menu-wrap .action-button-icon {
+  user-select: none;
+  position: relative;
+  color: hsl(var(--primary-foreground));
+  top: 1px;
+  font-size: 22px;
+}
+
+@media (max-width: 860px) {
+  .infinite-menu-wrap .face-title,
+  .infinite-menu-wrap .face-description {
+    display: none;
+  }
+}

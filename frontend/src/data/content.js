@@ -239,7 +239,36 @@ export const ARENA = {
   ],
 };
 
-// ---------------- Z — ZENITH ----------------
+// ---------------- Page extras (editorial bands & timelines) ----------------
+export const FLAGSHIP_STATS = [
+  { value: "1,100+", label: "Participants '24" },
+  { value: "550", label: "Teams at Prelims" },
+  { value: "400+", label: "Original Questions" },
+  { value: "6", label: "Finale Stage Slots" },
+  { value: "₹75K+", label: "Prize Pool" },
+];
+
+export const UNEARTHED_ERAS = [
+  { year: "2013", title: "The Corridor Quiz", text: "A single quiz table outside the physics block. Forty students showed up. The domain was born by accident." },
+  { year: "2016", title: "The First Mystery Room", text: "One classroom, one scripted case, one very confused security guard. The format never left." },
+  { year: "2019", title: "The Campus Goes Live", text: "Treasure Hunt scaled to the full SRMIST campus with a clue grid still in use today." },
+  { year: "2021", title: "Genesis — Fully Online", text: "Lockdown edition. Ciphers over Discord, quizzes over stream — the flame stayed lit." },
+  { year: "2024", title: "The Record Year", text: "Largest prelims in FUNDAZ history and a footfall past five thousand." },
+];
+
+export const NOW_GLANCE = [
+  { day: "Day 1", date: "Sept 12", headline: "Ignition", note: "Prelims, Treasure Hunt flag-off and Round 1 of every domain event." },
+  { day: "Day 2", date: "Sept 13", headline: "Escalation", note: "Main Quiz semis, Mystery Room slots all day, Round 2s everywhere." },
+  { day: "Day 3", date: "Sept 14", headline: "Zenith", note: "Finales across the board — the auditorium decides who owns the year." },
+];
+
+export const ARENA_STATS = [
+  { value: "120+", label: "Clues Planted Yearly" },
+  { value: "10+", label: "Campus Checkpoints" },
+  { value: "12", label: "Original Cases Written" },
+  { value: "30 min", label: "On the Mystery Clock" },
+  { value: "1", label: "Hint. Ever." },
+];
 export const ZENITH = {
   intro:
     "Over the years the FUNDAZ stage has hosted quizmasters, scientists, storytellers and champions. The Zenith wall remembers them.",

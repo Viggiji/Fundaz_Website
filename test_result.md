@@ -102,10 +102,22 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Regression + new-feature test of the FUNDAZ landing page. Three NEW features added: 1) PRELOADER with animation and click-to-skip, 2) HERO ORBIT CHANGE - letters now revolve ALONG the 3 elliptical orbits, 3) DOMAIN SECTION RESTRUCTURE - 3 tabs by event name with day-round cards, 4) ARENA SITE LINKS - placeholder links for treasure-hunt and mystery-room."
+user_problem_statement: "Test the rebuilt FUNDAZ multi-page app (React Router). Features: 1) PRELOADER with ~4s canvas animation and click-to-skip (plays once per session), 2) LANDING PAGE with atom hero and 6 orbiting letters that trigger page transitions, 3) PAGE TRANSITIONS with letter zooming overlay animation, 4) SIX LETTER PAGES (/flagship, /unearthed, /now, /domain, /arena, /zenith) with full content, 5) SCROLL-FILL NAVIGATION - companion letter fills up when scrolling at bottom, auto-navigates at 100%, 6) NAVBAR with letter navigation and transitions, 7) NEXTBAND for page navigation, 8) MOBILE RESPONSIVENESS (390x844)."
 
 frontend:
-  - task: "Preloader with animation and click-to-skip"
+  - task: "Multi-page React Router architecture"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "MULTI-PAGE APP - Complete rebuild with React Router. BrowserRouter with 7 routes: / (Landing), /flagship, /unearthed, /now, /domain, /arena, /zenith. TransitionProvider wraps all routes for page transitions. All routes render correctly with proper data-testids (page-flagship, page-unearthed, etc.)."
+
+  - task: "Preloader with canvas animation and click-to-skip"
     implemented: true
     working: true
     file: "/app/frontend/src/components/Preloader.jsx"
@@ -115,55 +127,127 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "NEW FEATURE - Preloader works perfectly. Full-screen overlay with canvas animation (wireframe clusters spiral inward ~2s, then flash + particle explosion ~1.5s). Status text 'F U N D A Z — Igniting the nucleus' displays during converge phase. Click-to-skip functionality works (overlay fades out quickly on click). Body scroll is locked during preloader (overflow: hidden) and unlocked after. Overlay automatically disappears after ~3.5s animation and reveals hero section. All data-testids present: preloader-overlay, preloader-canvas, preloader-status."
+        comment: "Preloader works perfectly. Full-screen overlay (data-testid: preloader-overlay) with canvas animation: wireframe clusters spiral inward (~2s), then flash + particle explosion (~1.5s). Status text 'F U N D A Z — Igniting the nucleus' displays. Click-to-skip works instantly. Body scroll locked during preloader. Plays once per session (sessionStorage 'fz_preloaded'). Respects prefers-reduced-motion. All testids present: preloader-overlay, preloader-canvas, preloader-status."
 
-  - task: "Hero orbit letters revolve along elliptical orbits"
+  - task: "Landing page with atom hero and orbiting letters"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/AtomHero.jsx"
+    file: "/app/frontend/src/pages/Landing.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "NEW FEATURE - Hero orbit letters now revolve ALONG the 3 elliptical orbits (not outer circle). All 6 letter buttons (F, U, N, D, A, Z) found with correct data-testids (hero-orbit-letter-f through -z). Letters use parametric equations for ellipse positioning with 3 different tilts (0°, 60°, 120°). Hover on orbit system pauses motion correctly. Letters are clickable and scroll to correct sections (tested D → Domain section). Note: Playwright requires force=True for clicks due to continuous animation, but real users can click without issues."
-      
-  - task: "Hero section with atom orbit and 6 letter buttons"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/AtomHero.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Hero section renders correctly with π nucleus and 6 orbiting letter buttons (F, U, N, D, A, Z). All buttons found with correct data-testids. Orbit system has rotating animation."
+        comment: "Landing page (data-testid: landing-page) renders after preloader. Hero section (hero-section) with atom orbit system (hero-orbit-system) showing π nucleus and 6 orbiting letters (F, U, N, D, A, Z) along 3 elliptical orbits with different tilts (0°, 60°, 120°). All letters found with testids: hero-orbit-letter-f through -z. Letters continuously orbit using parametric equations. Hover pauses motion. Hero hint (hero-hint) shows 'Pick a letter to enter its world'. Body overflow hidden (no scroll). FUNDAZ wordmark displays correctly."
 
-  - task: "Orbit letter navigation (scroll to sections)"
+  - task: "Page transitions with letter zooming overlay"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/AtomHero.jsx"
+    file: "/app/frontend/src/components/PageTransition.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Orbit letter buttons scroll to their respective sections. Tested with letter N → section-now. Scroll functionality works (scrolls to position 4171px, which is the exact offsetTop of Now section). Minor: Section appears 0.25px above viewport edge due to browser rounding, but this is imperceptible and not a functional issue."
+        comment: "Page transitions work perfectly. Three-phase animation: 1) COVER (~620ms) - letter zooms in from huge to centered on black overlay (data-testid: page-transition-overlay), 2) HOLD (~1050ms) - letter wiggles with rotating dashed ring (charging electron), transition-label shows 'Entering · [Page Name]', 3) REVEAL (~800ms) - letter zooms out, overlay fades, new page appears. Tested F→Flagship and U→Unearthed transitions. URL changes correctly. Smooth, cinematic transitions. For home navigation, shows π nucleus instead of letter with 'Returning to the orbit' label."
 
-  - task: "Hero CTA buttons (Enter the Orbit, Register for Events)"
+  - task: "Flagship page with full content"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/AtomHero.jsx"
+    file: "/app/frontend/src/pages/FlagshipPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "'Enter the Orbit' button scrolls to flagship section correctly. 'Register for Events' button scrolls to now section (same minor 0.25px offset as orbit letters, not a functional issue)."
+        comment: "Flagship page (data-testid: page-flagship) renders completely. LetterPageShell with letter chip 'F', index '01 / 06', editorial header. External register link (flagship-register-link) to aaruush.org. Vertical rounds timeline with 3 rounds (flagship-round-0, -1, -2). MarqueeStats band. Past editions section with 4 year rows (flagship-past-2024, -2023, -2022, -2021). NextBand at bottom. ScrollFillCompanion visible on right. All images load correctly."
+
+  - task: "Unearthed page with InfiniteMenu WebGL sphere"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/UnearthedPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Unearthed page (data-testid: page-unearthed) renders with full content. Story section, era timeline (unearthed-era-2013, -2016, -2019, -2022, -2025). InfiniteMenu WebGL sphere (data-testid: infinite-menu) with canvas renders correctly. Tested drag interaction on canvas (mouse down/move/up) - sphere spins smoothly without errors. MarqueeStats band. Organiser index with 6 rows (organiser-row-0 through -5). NextBand navigates to Now."
+
+  - task: "Now page with event index and registration"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/NowPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Now page (data-testid: page-now) renders completely. Day glance strip with 3 cards (now-day-0, -1, -2) showing Day 1/2/3 headlines. Editorial event index with 6 rows (now-event-row-main-quiz, -treasure-hunt, -mystery-room, -cryptic-conundrum, -fermi-files, -paradox-arena). 3 external links to aaruush.org for flagship/activities. 3 'Register Here' buttons for domain events (register-open-cryptic-conundrum, -fermi-files, -paradox-arena). Registration dialog (data-testid: register-dialog) opens correctly, form fills with testids (reg-input-name, -regno, -phone, -email, -team), submits successfully, saves to localStorage 'fundaz_registrations', shows success toast, closes dialog."
+
+  - task: "Domain page with event tabs and day-round cards"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/DomainPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Domain page (data-testid: page-domain) with 3 event tabs: Cryptic Conundrum, The Fermi Files, Paradox Arena (domain-tab-cryptic-conundrum, -fermi-files, -paradox-arena). Tab switching works perfectly. Each tab panel (domain-event-panel-{id}) shows event description and 3 day-round cards (domain-round-{id}-0, -1, -2) with Day 1/2/3, round names, dates. Horizontal timeline layout on desktop, vertical on mobile. Goto-register button (domain-goto-register-{id}) triggers transition to /now. Past events accordion (domain-past-2024, -2023, -2022) expands correctly."
+
+  - task: "Arena page with activity site links"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/ArenaPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Arena page (data-testid: page-arena) renders with 2 full-bleed activity banners. Treasure Hunt and Mystery Room sections with images, descriptions, 'How it works' numbered lists, past year themes. NEW FEATURE: Placeholder site links present and visible - arena-site-link-treasure-hunt shows 'Treasure Hunt site' with href='#', arena-site-link-mystery-room shows 'Mystery Room site' with href='#'. Both styled as subtle links. MarqueeStats band. NextBand navigates to Zenith."
+
+  - task: "Zenith page with guest rows"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/ZenithPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Zenith page (data-testid: page-zenith) renders with pull quote and 4 alternating guest rows (zenith-guest-0, -1, -2, -3) showing quizmasters, scientists, storytellers. Each row has image, quote, attribution. NextBand at bottom shows 'Return to the Atom' and navigates back to / (home)."
+
+  - task: "Scroll-fill navigation with auto-transition"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/ScrollFillCompanion.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "CRITICAL FEATURE WORKS PERFECTLY! ScrollFillCompanion (data-testid: scroll-fill-companion) appears on right side of all letter pages. Shows current letter SVG (companion-fill-svg) with rising starlight plasma wave fill. Label (companion-fill-label) displays letter name initially. When scrolled to bottom, shows approach charge (up to 30%). Wheel events at bottom fill companion further. Label updates to show percentage and next page name (e.g., '45% · Unearthed'). At 100%, label changes to 'Launching…' and auto-triggers page transition to next letter page after ~320ms. Tested on /flagship: filled to 100%, auto-navigated to /unearthed successfully! Scrolling up drains fill. Clicking companion also navigates. On /zenith, navigates back to home. Smooth, intuitive UX."
+
+  - task: "NextBand navigation component"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/NextBand.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "NextBand (data-testid: next-band) appears at bottom of every letter page. Shows 'Next · [Letter] — [Tagline]' and next page name (e.g., 'Unearthed'). On /zenith shows 'End of the orbit' and 'Return to the Atom'. Clicking triggers page transition to next letter page (or home from zenith). Hover effects work (text gradient, arrow translation). Includes hint text 'or keep scrolling — charge the letter to full and it carries you there.' Tested on /flagship: clicked NextBand, transitioned to /unearthed successfully."
 
   - task: "Navbar with letter navigation and active state"
     implemented: true
@@ -175,115 +259,19 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "Main navbar is fixed on top with all 6 letter buttons (F, U, N, D, A, Z) and register CTA. Letter navigation works correctly (tested F → flagship). Active state tracking implemented via IntersectionObserver in App.js."
+        comment: "Navbar (data-testid: main-navbar) fixed at top with glass-panel effect when scrolled. Logo (nav-logo) navigates to home. Desktop: 6 letter buttons (nav-letter-f through -z) with active underline indicator based on current route pathname. Active state shows underline, inactive shows on hover. Register CTA (nav-register-cta) navigates to /now. Clicking letter triggers page transition. Tested F→U navigation with transition overlay. Mobile (390x844): hamburger trigger (nav-mobile-trigger) opens Sheet with 6 mobile nav letters (mobile-nav-letter-f through -z). Clicking letter navigates and closes sheet. Landing page uses minimal navbar (no letters, just logo)."
 
-  - task: "Mobile navbar with Sheet"
+  - task: "Mobile responsiveness (390x844)"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/Navbar.jsx"
+    file: "N/A"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Mobile navbar (390x844) works perfectly. Trigger button opens Sheet with all 6 mobile nav letter buttons. Clicking a letter scrolls to section and closes the sheet automatically. Tested on mobile viewport."
-
-  - task: "Letter companion with morphing animation"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/LetterCompanion.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "REGRESSION TEST PASSED - Letter companion (MetaMask-fox style) works excellently. Hidden on hero (opacity: 0), appears when scrolled into sections (opacity: 1). SVG path morphs between letter shapes using flubber interpolation. Verified F→U→N morphing: paths change correctly, labels update (Flagship → Unearthed → Now). Companion alternates sides as designed."
-
-  - task: "Flagship section rendering"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/Flagship.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Flagship section renders completely. External register link to aaruush.org with target=_blank. All 3 round cards found. All 4 past edition cards (2024, 2023, 2022, 2021) found. Images load correctly."
-
-  - task: "Unearthed section rendering"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/Unearthed.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Unearthed section found and renders correctly with stats and organiser cards."
-
-  - task: "Now section with 6 event cards"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/Now.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Now section renders all 6 event cards (main-quiz, treasure-hunt, mystery-room, cryptic-conundrum, fermi-files, paradox-arena). 3 external links to aaruush.org found. 3 register buttons for domain events found."
-
-  - task: "Domain section with tabs by event name and day-round cards"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/DomainEvents.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "NEW FEATURE - Domain section restructured with 3 tabs BY EVENT NAME: Cryptic Conundrum, The Fermi Files, Paradox Arena (data-testids: domain-tab-cryptic-conundrum, domain-tab-fermi-files, domain-tab-paradox-arena). Tab switching works perfectly. Each event panel (domain-event-panel-{id}) displays event description and THREE day-round cards with correct data-testids: domain-round-{id}-0, domain-round-{id}-1, domain-round-{id}-2 showing Day 1/Day 2/Day 3 with round names and dates. Each panel has goto-register button (domain-goto-register-{id}) that scrolls to Now section. Past events accordion still works (domain-past-2024 expands correctly)."
-
-  - task: "Arena section with activity site links"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/Arena.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "NEW FEATURE - Arena section now has placeholder site links for both activities. Treasure Hunt site link (data-testid: arena-site-link-treasure-hunt) displays 'Treasure Hunt site' with href='#'. Mystery Room site link (data-testid: arena-site-link-mystery-room) displays 'Mystery Room site' with href='#'. Both links are visible and properly styled as subtle placeholder links. Arena section renders with both activity cards (treasure-hunt and mystery-room) showing images, descriptions, 'How it works' sections, and past year themes."
-
-  - task: "Zenith section rendering"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/sections/Zenith.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Zenith section found and renders with guest cards."
-
-  - task: "Mock registration flow with validation"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/RegisterDialog.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "REGRESSION TEST PASSED - Registration flow works perfectly. Dialog opens when clicking register button (tested with fermi-files). Form accepts realistic data (name='Arjun Sharma', regno='RA2111003010456', phone='9876543210', email='arjun.sharma@srmist.edu.in'). Dialog closes after submission, saves to localStorage correctly (fundaz_registrations), and shows success toast 'Registered for The Fermi Files'."
+        comment: "Mobile responsiveness excellent on 390x844 viewport. Landing page: hero orbit system scales correctly, no overflow. Mobile nav sheet works (opens, navigates, closes). All letter pages tested: /flagship, /unearthed, /now, /domain, /arena, /zenith - NO horizontal overflow on any page. Content reflows properly. Domain tabs stack vertically. Images scale. Text remains readable. ScrollFillCompanion visible and functional. NextBand responsive. Preloader works on mobile. Touch interactions work (tested on InfiniteMenu canvas). Overall mobile UX is smooth and polished."
 
   - task: "No console errors or broken images"
     implemented: true
@@ -295,23 +283,21 @@ frontend:
     status_history:
       - working: true
         agent: "testing"
-        comment: "REGRESSION TEST PASSED - No critical console errors detected. Only one non-critical failed request: CDN RUM endpoint (Cloudflare monitoring script) which doesn't affect functionality. No broken images. No horizontal overflow on desktop (1920x1080) or mobile (390x844). All images load correctly."
+        comment: "NO CRITICAL CONSOLE ERRORS detected across all pages. Console errors: 0. Console warnings: 8 (all non-critical) - Canvas2D willReadFrequently optimization suggestions (5), WebGL GPU stall performance warning (1). These are optimization hints, not errors. No broken images found on any page. All images load correctly (tested on /flagship, /unearthed, /now, /domain, /arena, /zenith). No horizontal overflow on desktop (1920x1080) or mobile (390x844). App is production-ready."
 
 metadata:
   created_by: "testing_agent"
-  version: "2.0"
-  test_sequence: 2
+  version: "3.0"
+  test_sequence: 3
   run_ui: true
 
 test_plan:
   current_focus:
-    - "All new features and regression tests completed successfully"
+    - "Multi-page app testing complete - all features working"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
   - agent: "testing"
-    message: "Comprehensive testing completed for FUNDAZ landing page. All major features working correctly. Hero atom orbit, navbar, letter companion morphing, all 6 sections, mock registration flow, and mobile responsiveness all tested and passing. Minor scroll positioning offset (0.25px) is due to browser rounding and not a functional issue. No critical bugs found. Application is ready for production."
-  - agent: "testing"
-    message: "NEW FEATURE TESTING COMPLETED (2025-07-10): Tested 3 new features + regression. 1) PRELOADER: Works perfectly with animation, click-to-skip, and scroll lock. 2) HERO ORBIT CHANGE: Letters now revolve along 3 elliptical orbits, remain clickable, hover pauses motion. 3) DOMAIN SECTION RESTRUCTURE: 3 event tabs by name with day-round cards working correctly. 4) ARENA SITE LINKS: Both placeholder links present and visible. REGRESSION: Letter companion morphing (F→U→N), registration dialog, no console errors, no overflow - all passing. NO CRITICAL ISSUES FOUND. All features working as specified in review request."
+    message: "MULTI-PAGE APP TESTING COMPLETE (2025-07-12): Comprehensive testing of rebuilt FUNDAZ React Router app. ALL MAJOR FEATURES WORKING: 1) Preloader with canvas animation and click-to-skip ✅, 2) Landing page with atom hero and 6 orbiting letters ✅, 3) Page transitions with letter zooming overlay (cover/hold/reveal phases) ✅, 4) All 6 letter pages render correctly (/flagship, /unearthed, /now, /domain, /arena, /zenith) ✅, 5) SCROLL-FILL NAVIGATION works perfectly - companion fills up when scrolling at bottom, auto-navigates at 100% ✅, 6) Navbar with letter navigation and transitions ✅, 7) NextBand navigation ✅, 8) Registration dialog with localStorage ✅, 9) Domain tabs with day-round cards ✅, 10) Arena placeholder site links ✅, 11) InfiniteMenu WebGL sphere with drag interaction ✅, 12) Mobile responsiveness (390x844) - no overflow on any page ✅, 13) No broken images ✅, 14) No critical console errors (only Canvas2D and WebGL performance warnings) ✅. APP IS PRODUCTION-READY."

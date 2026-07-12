@@ -11,8 +11,8 @@ import { motion } from "framer-motion";
   Click anywhere to skip.
 */
 
-const CONVERGE_MS = 2000;
-const EXPLODE_MS = 1500;
+const CONVERGE_MS = 2300;
+const EXPLODE_MS = 1600;
 
 const easeInCubic = (t) => t * t * t;
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
@@ -49,8 +49,17 @@ export const Preloader = ({ onComplete }) => {
     const cy = H / 2;
     const maxDim = Math.hypot(W, H);
 
+    // --- ambient backdrop stars (drawn every frame, twinkling) ---
+    const bgStars = Array.from({ length: 110 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.1 + 0.3,
+      base: Math.random() * 0.4 + 0.1,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
     // --- wireframe clusters spiralling inward ---
-    const CLUSTERS = 5;
+    const CLUSTERS = 7;
     const clusters = Array.from({ length: CLUSTERS }, (_, i) => ({
       angle0: (i / CLUSTERS) * Math.PI * 2 + Math.random() * 0.6,
       spin: 2.4 + Math.random() * 1.2,
@@ -66,22 +75,22 @@ export const Preloader = ({ onComplete }) => {
     let particles = [];
     let rings = [];
     const spawnExplosion = () => {
-      particles = Array.from({ length: 340 }, () => {
+      particles = Array.from({ length: 560 }, () => {
         const a = Math.random() * Math.PI * 2;
-        const sp = 2 + Math.pow(Math.random(), 1.6) * 15;
+        const sp = 2 + Math.pow(Math.random(), 1.6) * 18;
         return {
           x: cx,
           y: cy,
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp,
           life: 1,
-          decay: 0.006 + Math.random() * 0.012,
-          size: 0.8 + Math.random() * 2.2,
+          decay: 0.005 + Math.random() * 0.012,
+          size: 0.8 + Math.random() * 2.4,
           light: 60 + Math.random() * 35,
-          streak: Math.random() < 0.18,
+          streak: Math.random() < 0.22,
         };
       });
-      rings = [0, 140, 320].map((delay) => ({ born: performance.now() + delay }));
+      rings = [0, 120, 280, 460].map((delay) => ({ born: performance.now() + delay }));
     };
 
     let raf;
@@ -128,6 +137,27 @@ export const Preloader = ({ onComplete }) => {
       // translucent clear = motion trails
       ctx.fillStyle = "hsla(220, 12%, 5%, 0.26)";
       ctx.fillRect(0, 0, W, H);
+
+      // twinkling backdrop stars
+      for (const s of bgStars) {
+        const tw = s.base + Math.sin(t * 0.003 + s.phase) * 0.15;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(210, 20%, 85%, ${Math.max(0.04, tw)})`;
+        ctx.fill();
+      }
+
+      // screen shake right after the collision
+      let shook = false;
+      if (phase === "explode") {
+        const et = now - explodeStart;
+        if (et < 380) {
+          const mag = (1 - et / 380) * 9;
+          ctx.save();
+          ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
+          shook = true;
+        }
+      }
 
       if (phase === "converge") {
         const prog = Math.min(1, t / CONVERGE_MS);
@@ -211,6 +241,7 @@ export const Preloader = ({ onComplete }) => {
           setLeaving(true);
         }
       }
+      if (shook) ctx.restore();
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);

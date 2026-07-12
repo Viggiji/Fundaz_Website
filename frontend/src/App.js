@@ -1,73 +1,36 @@
-import { useEffect, useState } from "react";
 import "@/App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
-import { Preloader } from "@/components/Preloader";
+import { TransitionProvider } from "@/components/PageTransition";
 import { Starfield } from "@/components/Starfield";
-import { Navbar } from "@/components/Navbar";
-import { AtomHero } from "@/components/AtomHero";
-import { LetterCompanion } from "@/components/LetterCompanion";
-import { Flagship } from "@/components/sections/Flagship";
-import { Unearthed } from "@/components/sections/Unearthed";
-import { Now } from "@/components/sections/Now";
-import { DomainEvents } from "@/components/sections/DomainEvents";
-import { Arena } from "@/components/sections/Arena";
-import { Zenith } from "@/components/sections/Zenith";
-import { Footer } from "@/components/Footer";
+import Landing from "@/pages/Landing";
+import FlagshipPage from "@/pages/FlagshipPage";
+import UnearthedPage from "@/pages/UnearthedPage";
+import NowPage from "@/pages/NowPage";
+import DomainPage from "@/pages/DomainPage";
+import ArenaPage from "@/pages/ArenaPage";
+import ZenithPage from "@/pages/ZenithPage";
 
 function App() {
-  // -1 = hero (companion hidden), 0..5 = F U N D A Z sections
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const sections = document.querySelectorAll("[data-letter-index]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveIndex(parseInt(entry.target.dataset.letterIndex, 10));
-          }
-        });
-      },
-      { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => observer.observe(s));
-
-    const hero = document.getElementById("hero");
-    const heroObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setActiveIndex(-1);
-      },
-      { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
-    );
-    if (hero) heroObserver.observe(hero);
-
-    return () => {
-      observer.disconnect();
-      heroObserver.disconnect();
-    };
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-background">
-      {loading && <Preloader onComplete={() => setLoading(false)} />}
-      <Starfield />
-      <div className="noise-overlay" />
-      <Navbar activeIndex={activeIndex} />
-      <LetterCompanion activeIndex={activeIndex} />
-
-      <main className="relative z-10">
-        <AtomHero />
-        <Flagship />
-        <Unearthed />
-        <Now />
-        <DomainEvents />
-        <Arena />
-        <Zenith />
-      </main>
-
-      <Footer />
-      <Toaster position="bottom-right" richColors />
+      <BrowserRouter>
+        <TransitionProvider>
+          <Starfield />
+          <div className="noise-overlay" />
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/flagship" element={<FlagshipPage />} />
+            <Route path="/unearthed" element={<UnearthedPage />} />
+            <Route path="/now" element={<NowPage />} />
+            <Route path="/domain" element={<DomainPage />} />
+            <Route path="/arena" element={<ArenaPage />} />
+            <Route path="/zenith" element={<ZenithPage />} />
+            <Route path="*" element={<Landing />} />
+          </Routes>
+          <Toaster position="bottom-right" richColors />
+        </TransitionProvider>
+      </BrowserRouter>
     </div>
   );
 }
