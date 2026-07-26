@@ -79,8 +79,6 @@ export default function Landing() {
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="orbit-system relative"
           style={{ "--orbit-size": ORBIT_SIZE, width: ORBIT_SIZE, height: "calc(min(86vw, 620px) * 0.82)" }}
-          onMouseEnter={() => { hoverRef.current = true; }}
-          onMouseLeave={() => { hoverRef.current = false; }}
           data-testid="hero-orbit-system"
         >
           <div className="atom-ellipse" style={{ transform: "rotate(0deg)" }} />
@@ -103,6 +101,8 @@ export default function Landing() {
               <button
                 className="orbit-node group relative"
                 onClick={() => go(l.id)}
+                onMouseEnter={() => { hoverRef.current = true; }}
+                onMouseLeave={() => { hoverRef.current = false; }}
                 aria-label={`${l.char} — ${l.word}`}
                 data-testid={`hero-orbit-letter-${l.char.toLowerCase()}`}
               >

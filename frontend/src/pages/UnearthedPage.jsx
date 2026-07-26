@@ -63,7 +63,7 @@ export default function UnearthedPage() {
         <motion.div
           {...fadeUp}
           transition={{ duration: 0.8 }}
-          className="relative mt-10 h-[62vh] min-h-[420px] w-full overflow-hidden border-y border-border bg-background"
+          className="relative mt-10 h-[78vh] min-h-[540px] w-full overflow-hidden border-y border-border bg-background"
         >
           <InfiniteMenu items={organiserItems} />
           <p className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 font-mono-tech text-[9px] uppercase tracking-[0.35em] text-muted-foreground/70">

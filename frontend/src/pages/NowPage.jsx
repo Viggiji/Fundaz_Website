@@ -62,6 +62,9 @@ export default function NowPage() {
                 </div>
                 <p className="mt-1.5 font-mono-tech text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{ev.date}</p>
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{ev.blurb}</p>
+                {ev.description && (
+                  <p className="mt-3 max-w-2xl text-xs leading-relaxed text-muted-foreground/80">{ev.description}</p>
+                )}
               </div>
               <div className="col-span-2 lg:col-span-1">
                 {ev.action === "register" ? (

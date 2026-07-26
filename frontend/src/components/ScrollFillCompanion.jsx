@@ -9,6 +9,8 @@ import { useTransitionNav } from "@/components/PageTransition";
   "starlight plasma" (silver wave + glow — on-theme, not literal water).
   At 100% it launches the transition to the next letter's page.
   Scrolling back up drains the charge. Clicking it also jumps ahead.
+
+  v2 — smooth RAF-based interpolation (no jittery setInterval)
 */
 
 export const ScrollFillCompanion = ({ letterIdx }) => {
@@ -16,12 +18,17 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
   const letter = LETTERS[letterIdx];
   const next = letterIdx >= LETTERS.length - 1 ? null : LETTERS[letterIdx + 1];
   const [fill, setFill] = useState(0);
-  const fillRef = useRef(0);
+
+  // Refs for animation state (never trigger re-renders directly)
+  const targetFillRef = useRef(0);
+  const displayFillRef = useRef(0);
   const firedRef = useRef(false);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     firedRef.current = false;
-    fillRef.current = 0;
+    targetFillRef.current = 0;
+    displayFillRef.current = 0;
     setFill(0);
 
     const doc = document.documentElement;
@@ -31,42 +38,75 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
       if (max <= 0) return 0;
       const remaining = max - window.scrollY;
       const zone = window.innerHeight * 0.7;
-      return Math.max(0, Math.min(1, 1 - remaining / zone)) * 30; // approach charge up to 30%
+      return Math.max(0, Math.min(1, 1 - remaining / zone)) * 30;
     };
-    const commit = () => {
-      const f = Math.max(0, Math.min(100, fillRef.current));
-      fillRef.current = f;
-      setFill(f);
-      if (f >= 100 && !firedRef.current) {
-        firedRef.current = true;
-        setTimeout(() => go(next ? next.id : "home"), 320);
-      }
-    };
+
     const onWheel = (e) => {
       if (firedRef.current) return;
-      if (atBottom() && e.deltaY > 0) fillRef.current += Math.min(13, Math.abs(e.deltaY) * 0.06);
-      else if (e.deltaY < 0) fillRef.current -= 9;
-      commit();
+      if (atBottom() && e.deltaY > 0) {
+        targetFillRef.current += Math.min(13, Math.abs(e.deltaY) * 0.06);
+      } else if (e.deltaY < 0) {
+        targetFillRef.current -= 9;
+      }
+      targetFillRef.current = Math.max(0, Math.min(100, targetFillRef.current));
     };
+
     const onScroll = () => {
       if (firedRef.current) return;
       const base = approach();
-      if (fillRef.current < base) fillRef.current = base;
-      commit();
+      if (targetFillRef.current < base) targetFillRef.current = base;
     };
+
     let lastY = null;
     const onTouchStart = (e) => { lastY = e.touches[0].clientY; };
     const onTouchMove = (e) => {
       if (firedRef.current || lastY == null) return;
       const dy = lastY - e.touches[0].clientY;
       lastY = e.touches[0].clientY;
-      if (atBottom() && dy > 0) { fillRef.current += dy * 0.4; commit(); }
+      if (atBottom() && dy > 0) {
+        targetFillRef.current = Math.min(100, targetFillRef.current + dy * 0.4);
+      }
     };
-    const decay = setInterval(() => {
-      if (firedRef.current) return;
-      const base = approach();
-      if (fillRef.current > base) { fillRef.current = Math.max(base, fillRef.current - 1.6); commit(); }
-    }, 90);
+
+    // RAF loop — smooth lerp between displayFill and targetFill
+    let lastTime = 0;
+    const LERP_SPEED = 0.12; // interpolation factor per frame
+    const DECAY_RATE = 0.4; // decay per second when idle
+
+    const loop = (now) => {
+      const dt = lastTime ? (now - lastTime) / 1000 : 0.016;
+      lastTime = now;
+
+      if (!firedRef.current) {
+        // Natural decay toward approach baseline
+        const base = approach();
+        if (targetFillRef.current > base && !atBottom()) {
+          targetFillRef.current = Math.max(base, targetFillRef.current - DECAY_RATE * dt * 60);
+        }
+        targetFillRef.current = Math.max(0, Math.min(100, targetFillRef.current));
+      }
+
+      // Smooth lerp
+      const diff = targetFillRef.current - displayFillRef.current;
+      if (Math.abs(diff) > 0.1) {
+        displayFillRef.current += diff * LERP_SPEED;
+      } else {
+        displayFillRef.current = targetFillRef.current;
+      }
+
+      // Only update React state once per frame
+      const rounded = Math.round(displayFillRef.current * 10) / 10;
+      setFill(rounded);
+
+      // Fire transition at 100%
+      if (rounded >= 100 && !firedRef.current) {
+        firedRef.current = true;
+        setTimeout(() => go(next ? next.id : "home"), 320);
+      }
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
 
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -77,12 +117,12 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      clearInterval(decay);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [letterIdx, go, next]);
 
   if (!letter) return null;
-  const waveY = 126 - (fill / 100) * 138; // slides the plasma level up through the glyph
+  const waveY = 126 - (fill / 100) * 138;
   const charged = fill > 2;
 
   return (
@@ -117,7 +157,11 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
             </linearGradient>
           </defs>
           <g clipPath={`url(#glyph-clip-${letter.char})`}>
-            <g style={{ transform: `translateY(${waveY}px)`, transition: "transform 0.3s ease-out" }}>
+            <g style={{
+              transform: `translateY(${waveY}px)`,
+              transition: "transform 0.15s ease-out",
+              willChange: "transform",
+            }}>
               <path
                 className="fill-wave"
                 d="M-46 5 Q -38 -3 -30 5 T -14 5 T 2 5 T 18 5 T 34 5 T 50 5 T 66 5 T 82 5 T 98 5 T 114 5 T 130 5 V 160 H -46 Z"
