@@ -62,6 +62,9 @@ export default function FlagshipPage() {
       <PageSection data-testid="flagship-past">
         <SectionKicker>The Archive</SectionKicker>
         <h2 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">Previous editions</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Looking back at the legacy of the Main Quiz, each past edition brought its own unique flavor, challenging participants with unprecedented formats and brain-bending questions that set the gold standard for quizzing at Aaruush.
+        </p>
         <div className="mt-10">
           {FLAGSHIP.pastEditions.map((e, i) => (
             <motion.div

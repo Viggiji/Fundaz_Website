@@ -430,6 +430,8 @@ class InfiniteGridMenu {
   smoothRotationVelocity = 0;
   scaleFactor = 1.0;
   movementActive = false;
+  paused = false;
+  rafId = null;
   constructor(canvas, items, onActiveItemChange, onMovementChange, onInit = null, scale = 1.0) {
     this.canvas = canvas;
     this.items = items || [];
@@ -448,15 +450,29 @@ class InfiniteGridMenu {
     }
     this.#updateProjectionMatrix(gl);
   }
+  pause() {
+    this.paused = true;
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
+  resume() {
+    if (this.paused && !this.disposed) {
+      this.paused = false;
+      this.#time = performance.now();
+      this.run(this.#time);
+    }
+  }
   run(time = 0) {
-    if (this.disposed) return;
+    if (this.disposed || this.paused) return;
     this.#deltaTime = Math.min(32, time - this.#time);
     this.#time = time;
     this.#deltaFrames = this.#deltaTime / this.TARGET_FRAME_DURATION;
     this.#frames += this.#deltaFrames;
     this.#animate(this.#deltaTime);
     this.#render();
-    requestAnimationFrame(t => this.run(t));
+    this.rafId = requestAnimationFrame(t => this.run(t));
   }
   #init(onInit) {
     this.gl = this.canvas.getContext('webgl2', { antialias: true, alpha: false });
@@ -704,6 +720,7 @@ const defaultItems = [
 ];
 
 export default function InfiniteMenu({ items = [], scale = 1.0 }) {
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [activeItem, setActiveItem] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
@@ -720,10 +737,28 @@ export default function InfiniteMenu({ items = [], scale = 1.0 }) {
         items.length ? items : defaultItems,
         handleActiveItem,
         setIsMoving,
-        sk => sk.run(),
+        sk => {
+           sk.paused = true; // wait for observer
+           sk.run(); 
+        },
         scale
       );
     }
+
+    let observer;
+    if (containerRef.current && sketch) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            sketch.resume();
+          } else {
+            sketch.pause();
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(containerRef.current);
+    }
+
     const handleResize = () => {
       if (sketch) {
         sketch.resize();
@@ -733,6 +768,7 @@ export default function InfiniteMenu({ items = [], scale = 1.0 }) {
     handleResize();
     return () => {
       if (sketch) sketch.disposed = true;
+      if (observer) observer.disconnect();
       window.removeEventListener('resize', handleResize);
     };
   }, [items, scale]);
@@ -743,7 +779,7 @@ export default function InfiniteMenu({ items = [], scale = 1.0 }) {
     }
   };
   return (
-    <div className="infinite-menu-wrap" style={{ position: 'relative', width: '100%', height: '100%' }} data-testid="infinite-menu">
+    <div ref={containerRef} className="infinite-menu-wrap" style={{ position: 'relative', width: '100%', height: '100%' }} data-testid="infinite-menu">
       <canvas id="infinite-grid-menu-canvas" ref={canvasRef} />
       {activeItem && (
         <>

@@ -156,7 +156,9 @@ export default function DomainPage() {
       <PageSection data-testid="domain-past">
         <SectionKicker>Retired into Legend</SectionKicker>
         <h2 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">Past domain events</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Each lived exactly one edition, then vanished forever.</p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Our previous editions featured ambitious domain-specific challenges that pushed boundaries. Each lived exactly one edition, serving its purpose to test the sharpest minds before vanishing into the FUNDAZ archives forever.
+        </p>
         <Accordion type="single" collapsible className="mt-8 max-w-3xl">
           {DOMAIN_EVENTS.past.map((y) => (
             <AccordionItem key={y.year} value={y.year} className="border-border">

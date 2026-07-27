@@ -14,7 +14,7 @@
 }
 
 .scroll-stack-inner {
-  padding: 20vh 5rem 50rem;
+  padding: 20vh 5rem 20rem;
   min-height: 100vh;
 }
 
@@ -38,9 +38,9 @@
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   position: relative;
-  background: hsl(var(--card) / 0.7);
+  background: hsl(var(--card) / 0.9);
   border: 1px solid hsl(var(--border) / 0.8);
-  backdrop-filter: blur(14px);
+  /* Removed backdrop-filter: blur(14px) for performance */
 }
 
 .scroll-stack-end {
@@ -51,8 +51,9 @@
 /* Responsive */
 @media (max-width: 768px) {
   .scroll-stack-inner {
-    padding: 16vh 1.5rem 40rem;
+    padding: 16vh 1.5rem 15rem;
   }
+
   .scroll-stack-card {
     padding: 1.5rem;
     border-radius: 1rem;

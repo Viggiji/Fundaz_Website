@@ -31,7 +31,7 @@ const P = {
 export const FLAGSHIP = {
   edition: "Main Quiz '25",
   theme: "The Paradox Protocol",
-  date: "Sept 12 – 13, 2025",
+  date: "TBD – 13, 2025",
   venue: "Dr. T.P. Ganesan Auditorium, SRMIST",
   teamSize: "Teams of 2",
   prizePool: "₹75,000+",
@@ -88,7 +88,7 @@ export const NOW_EVENTS = [
     id: "main-quiz",
     name: "Main Quiz '25 — The Paradox Protocol",
     type: "Flagship",
-    date: "Sept 12 – 13",
+    date: "To be Revealed",
     blurb: "The flagship. Three days, three rounds, one champion team. Registrations on the official Aaruush portal.",
     description: "FUNDAZ's crown jewel pits hundreds of teams through a gauntlet of written prelims, buzzer semis, and a finale on the main stage. Questions span science, mathematics, pop culture, history, and lateral thinking. The top six teams battle for ₹75K+ in prizes and the title of Quiz Champions. This year's theme — The Paradox Protocol — promises twists that break the rules.",
     action: "link",
@@ -156,9 +156,9 @@ export const DOMAIN_EVENTS = {
       description:
         "A cipher-breaking campaign through the history of secret writing. Teams of two survive three escalating rounds — Caesar shifts and Vigenère grids on day one, hidden-in-plain-sight steganography on day two, and an unbroken final cipher on day three.",
       rounds: [
-        { day: "Day 1", date: "Sept 12", name: "Round 1 — Cipher Sprint", detail: "Eight sealed envelopes of classical ciphers against the clock. Top 16 teams advance.", image: u("photo-1553991562-9f24b119ff51", 800) },
-        { day: "Day 2", date: "Sept 13", name: "Round 2 — The Stego Vault", detail: "Messages hidden inside images, audio and campus posters. Find them before your rivals do.", image: u("photo-1569002925653-ed18f55d7292", 800) },
-        { day: "Day 3", date: "Sept 14", name: "Finale — The Unbreakable", detail: "One custom cipher, one hour, no hints. First correct plaintext takes the title.", image: u("photo-1695893155282-4f71c946da5a", 800) },
+        { day: "Day 1", date: "TBD", name: "Round 1 — Cipher Sprint", detail: "Eight sealed envelopes of classical ciphers against the clock. Top 16 teams advance.", image: u("photo-1553991562-9f24b119ff51", 800) },
+        { day: "Day 2", date: "TBD", name: "Round 2 — The Stego Vault", detail: "Messages hidden inside images, audio and campus posters. Find them before your rivals do.", image: u("photo-1569002925653-ed18f55d7292", 800) },
+        { day: "Day 3", date: "TBD", name: "Finale — The Unbreakable", detail: "One custom cipher, one hour, no hints. First correct plaintext takes the title.", image: u("photo-1695893155282-4f71c946da5a", 800) },
       ],
     },
     {
@@ -169,9 +169,9 @@ export const DOMAIN_EVENTS = {
       description:
         "Estimation warfare inspired by Enrico Fermi. No internet, no calculators — just structured guessing. Three days of building order-of-magnitude answers to absurd questions and defending the logic behind them.",
       rounds: [
-        { day: "Day 1", date: "Sept 12", name: "Round 1 — Cold Estimates", detail: "Solo written round: 12 impossible questions, scored on the power of ten you land in.", image: u("photo-1473163928189-364b2c4e1135", 800) },
-        { day: "Day 2", date: "Sept 13", name: "Round 2 — Panel Defence", detail: "Qualified teams defend their reasoning live before a panel that loves poking holes.", image: u("photo-1626125345510-4603468eedfb", 800) },
-        { day: "Day 3", date: "Sept 14", name: "Finale — The Final File", detail: "One monster estimation built in stages on stage. Cleanest chain of logic wins.", image: u("photo-1761618291331-535983ae4296", 800) },
+        { day: "Day 1", date: "TBD", name: "Round 1 — Cold Estimates", detail: "Solo written round: 12 impossible questions, scored on the power of ten you land in.", image: u("photo-1473163928189-364b2c4e1135", 800) },
+        { day: "Day 2", date: "TBD", name: "Round 2 — Panel Defence", detail: "Qualified teams defend their reasoning live before a panel that loves poking holes.", image: u("photo-1626125345510-4603468eedfb", 800) },
+        { day: "Day 3", date: "TBD", name: "Finale — The Final File", detail: "One monster estimation built in stages on stage. Cleanest chain of logic wins.", image: u("photo-1761618291331-535983ae4296", 800) },
       ],
     },
     {
@@ -182,9 +182,9 @@ export const DOMAIN_EVENTS = {
       description:
         "The rapid-fire critical thinking showdown. Riddles, self-referencing puzzles and lateral-thinking traps — answer in seconds or take the walk. Three days of eliminations until one mind is left standing.",
       rounds: [
-        { day: "Day 1", date: "Sept 12", name: "Round 1 — Lightning Riddles", detail: "Open qualifiers: 90 seconds per riddle, sudden elimination on two misses.", image: u("photo-1583787035686-91b82ad5d811", 800) },
-        { day: "Day 2", date: "Sept 13", name: "Round 2 — The Knockouts", detail: "Head-to-head brackets on stage. Steal your opponent's question, steal their spot.", image: u("photo-1585346230722-6b9df46d0d54", 800) },
-        { day: "Day 3", date: "Sept 14", name: "Finale — Sudden Death", detail: "The last four face the paradox gauntlet. One wrong step ends the run.", image: u("photo-1542190891-2093d38760f2", 800) },
+        { day: "Day 1", date: "TBD", name: "Round 1 — Lightning Riddles", detail: "Open qualifiers: 90 seconds per riddle, sudden elimination on two misses.", image: u("photo-1583787035686-91b82ad5d811", 800) },
+        { day: "Day 2", date: "TBD", name: "Round 2 — The Knockouts", detail: "Head-to-head brackets on stage. Steal your opponent's question, steal their spot.", image: u("photo-1585346230722-6b9df46d0d54", 800) },
+        { day: "Day 3", date: "TBD", name: "Finale — Sudden Death", detail: "The last four face the paradox gauntlet. One wrong step ends the run.", image: u("photo-1542190891-2093d38760f2", 800) },
       ],
     },
   ],
@@ -263,9 +263,9 @@ export const UNEARTHED_ERAS = [
 ];
 
 export const NOW_GLANCE = [
-  { day: "Day 1", date: "Sept 12", headline: "Ignition", note: "Prelims, Treasure Hunt flag-off and Round 1 of every domain event." },
-  { day: "Day 2", date: "Sept 13", headline: "Escalation", note: "Main Quiz semis, Mystery Room slots all day, Round 2s everywhere." },
-  { day: "Day 3", date: "Sept 14", headline: "Zenith", note: "Finales across the board — the auditorium decides who owns the year." },
+  { day: "Day 1", date: "TBD", headline: "Ignition", note: "Prelims, Treasure Hunt flag-off and Round 1 of every domain event." },
+  { day: "Day 2", date: "TBD", headline: "Escalation", note: "Main Quiz semis, Mystery Room slots all day, Round 2s everywhere." },
+  { day: "Day 3", date: "TBD", headline: "Zenith", note: "Finales across the board — the auditorium decides who owns the year." },
 ];
 
 export const ARENA_STATS = [
@@ -279,9 +279,10 @@ export const ZENITH = {
   intro:
     "Over the years the FUNDAZ stage has hosted quizmasters, scientists, storytellers and champions. The Zenith wall remembers them.",
   guests: [
-    { name: "Dr. Vikram Sarin", tag: "Astrophysicist & Science Communicator", year: "2024", photo: P.p1, quote: "A crowd that heckles you with better answers — I've never had more fun on stage." },
-    { name: "Meera Chandran", tag: "National Quiz Circuit Champion", year: "2023", photo: P.p4, quote: "The Main Quiz finale here is as sharp as anything on the national circuit." },
-    { name: "Raghav Pillai", tag: "Puzzle Designer, Escape Labs", year: "2023", photo: P.p5, quote: "Their Mystery Room writing team could work in the industry tomorrow." },
-    { name: "Ishita Verma", tag: "Mathematician & Author", year: "2022", photo: P.p7, quote: "FUNDAZ proves the fastest way to teach math is to hide it inside a game." },
+    { name: "Robin Singh", tag: "Astrophysicist & Science Communicator", year: "2008", photo: P.p1, quote: "A crowd that heckles you with better answers — I've never had more fun on stage." },
+    { name: "Chetan Bhagat", tag: "National Quiz Circuit Champion", year: "2010", photo: P.p4, quote: "The Main Quiz finale here is as sharp as anything on the national circuit." },
+    { name: "Rajat Kapoor", tag: "Puzzle Designer, Escape Labs", year: "2014", photo: P.p5, quote: "Their Mystery Room writing team could work in the industry tomorrow." },
+    { name: "General Dr. VK Singh", tag: "Mathematician & Author", year: "2017", photo: P.p7, quote: "FUNDAZ proves the fastest way to teach math is to hide it inside a game." },
+    { name: "T K Padmanabham", tag: "QuizMaster", year: "2025", photo: P.p7, quote: "FUNDAZ proves the fastest way to teach math is to hide it inside a game." },
   ],
 };

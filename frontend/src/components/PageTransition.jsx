@@ -1,17 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LETTERS, LETTER_PATHS } from "@/lib/letterPaths";
 
 /*
   Cinematic page transitions:
-  1. "cover"  — the target letter zooms in from huge, filling the screen, then
-                settles centered on a pitch black overlay.
-  2. "hold"   — the letter wiggles / charges (orbiting electron ring) while the
+  1. "cover"  — the source letter zooms out of screen, while the target letter zooms in from 0 to 1.
+  2. "hold"   — the target letter wiggles / charges (orbiting electron ring) while the
                 route silently swaps underneath.
-  3. "reveal" — the letter zooms out past the viewport as the overlay dissolves
+  3. "reveal" — the target letter zooms out past the viewport as the overlay dissolves
                 into the new page's content.
-  Target "home" shows the π nucleus instead of a letter.
 */
 
 const TransitionContext = createContext({ go: () => {} });
@@ -23,17 +21,21 @@ const REVEAL_MS = 800;
 
 export const TransitionProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [state, setState] = useState(null); // { idx: -1 for home | 0..5, phase }
+  const { pathname } = useLocation();
+  const [state, setState] = useState(null); // { idx: target, sIdx: source, phase }
   const busyRef = useRef(false);
+  
+  const currentIdx = LETTERS.findIndex((l) => `/${l.id}` === pathname);
 
   const go = useCallback(
     (id) => {
       if (busyRef.current) return;
       const idx = id === "home" ? -1 : LETTERS.findIndex((l) => l.id === id);
+      const sIdx = currentIdx; // capture current route
       busyRef.current = true;
-      setState({ idx, phase: "cover" });
+      setState({ idx, sIdx, phase: "cover" });
     },
-    []
+    [currentIdx]
   );
 
   useEffect(() => {
@@ -56,7 +58,8 @@ export const TransitionProvider = ({ children }) => {
     return () => clearTimeout(t);
   }, [state, navigate]);
 
-  const letter = state && state.idx >= 0 ? LETTERS[state.idx] : null;
+  const targetLetter = state && state.idx >= 0 ? LETTERS[state.idx] : null;
+  const sourceLetter = state && state.sIdx >= 0 ? LETTERS[state.sIdx] : null;
   const phase = state?.phase;
 
   return (
@@ -87,15 +90,40 @@ export const TransitionProvider = ({ children }) => {
               <span className="absolute -top-1 left-1/2 h-2 w-2 rounded-full bg-primary shadow-glow" />
             </motion.div>
 
+            {/* SOURCE LETTER */}
+            {(phase === "cover" || phase === "hold") && (
+              <motion.div
+                key={`source-${state.sIdx}`}
+                className="absolute flex items-center justify-center"
+                initial={{ scale: 1, opacity: 1, rotate: 0 }}
+                animate={{
+                  scale: phase === "cover" ? 25 : 25,
+                  opacity: phase === "cover" ? 0 : 0
+                }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                style={{ willChange: "transform, opacity" }}
+              >
+                {sourceLetter ? (
+                  <svg viewBox="-6 -6 92 132" className="companion-letter w-[110px]">
+                    <path d={LETTER_PATHS[sourceLetter.char]} style={{ fill: "hsl(var(--primary) / 0.16)" }} />
+                  </svg>
+                ) : (
+                  <span className="font-serif text-8xl italic text-gradient-silver" style={{ WebkitTextFillColor: "transparent" }}>π</span>
+                )}
+              </motion.div>
+            )}
+
+            {/* TARGET LETTER */}
             <motion.div
-              key={`${state.idx}-letter`}
-              initial={{ scale: 9, opacity: 0 }}
+              key={`target-${state.idx}`}
+              className="absolute flex items-center justify-center"
+              initial={{ scale: 0.1, opacity: 0 }}
               animate={
                 phase === "cover"
-                  ? { scale: 1, opacity: 1, rotate: 0, y: 0 }
+                  ? { scale: 1, opacity: 1, rotate: 0 }
                   : phase === "hold"
-                    ? { scale: [1, 1.07, 1], opacity: 1, rotate: [-6, 6, -6], y: [0, -8, 0] }
-                    : { scale: 18, opacity: 0 }
+                    ? { scale: [1, 1.07, 1], opacity: 1, rotate: [-6, 6, -6] }
+                    : { scale: 25, opacity: 0, rotate: 0 }
               }
               transition={
                 phase === "cover"
@@ -104,11 +132,12 @@ export const TransitionProvider = ({ children }) => {
                     ? { duration: 1.1, repeat: Infinity, ease: "easeInOut" }
                     : { duration: 0.78, ease: [0.55, 0, 0.68, 0.2] }
               }
+              style={{ willChange: "transform, opacity" }}
               data-testid="transition-letter"
             >
-              {letter ? (
+              {targetLetter ? (
                 <svg viewBox="-6 -6 92 132" className="companion-letter w-[110px]">
-                  <path d={LETTER_PATHS[letter.char]} style={{ fill: "hsl(var(--primary) / 0.16)" }} />
+                  <path d={LETTER_PATHS[targetLetter.char]} style={{ fill: "hsl(var(--primary) / 0.16)" }} />
                 </svg>
               ) : (
                 <span className="font-serif text-8xl italic text-gradient-silver" style={{ WebkitTextFillColor: "transparent" }}>π</span>
@@ -122,7 +151,7 @@ export const TransitionProvider = ({ children }) => {
             transition={{ duration: 1.4, repeat: phase === "reveal" ? 0 : Infinity }}
             data-testid="transition-label"
           >
-            {letter ? `Entering · ${letter.word}` : "Returning to the orbit"}
+            {targetLetter ? `Entering · ${targetLetter.word}` : "Returning to the orbit"}
           </motion.p>
         </motion.div>
       )}

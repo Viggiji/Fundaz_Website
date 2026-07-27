@@ -35,12 +35,13 @@ export default function ZenithPage() {
             Scroll through the legends
           </h2>
           <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            Scroll down to stack through each guest. Each card reveals a voice that shaped FUNDAZ.
+            Scroll down to stack through each guest. Each card reveals a voice that shaped FUNDAZ. Over the previous editions, we've hosted a diverse set of visionaries, industry leaders, and creators who have left an indelible mark on our audience.
           </p>
         </div>
 
-        <div className="mt-10 w-full" style={{ height: "100vh" }}>
+        <div className="mt-10 w-full">
           <ScrollStack
+            useWindowScroll={true}
             itemDistance={120}
             itemScale={0.04}
             itemStackDistance={25}

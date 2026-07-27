@@ -17,19 +17,24 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
   const { go, transitioning } = useTransitionNav();
   const letter = LETTERS[letterIdx];
   const next = letterIdx >= LETTERS.length - 1 ? null : LETTERS[letterIdx + 1];
-  const [fill, setFill] = useState(0);
+  const [isCharged, setIsCharged] = useState(false);
 
-  // Refs for animation state (never trigger re-renders directly)
   const targetFillRef = useRef(0);
   const displayFillRef = useRef(0);
   const firedRef = useRef(false);
   const rafRef = useRef(null);
+  const isChargedRef = useRef(false);
+  
+  // DOM refs for direct manipulation
+  const waveRef = useRef(null);
+  const shadowRef = useRef(null);
+  const labelRef = useRef(null);
 
   useEffect(() => {
     firedRef.current = false;
     targetFillRef.current = 0;
     displayFillRef.current = 0;
-    setFill(0);
+    setIsCharged(false);
 
     const doc = document.documentElement;
     const atBottom = () => window.innerHeight + window.scrollY >= doc.scrollHeight - 24;
@@ -94,12 +99,36 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
         displayFillRef.current = targetFillRef.current;
       }
 
-      // Only update React state once per frame
-      const rounded = Math.round(displayFillRef.current * 10) / 10;
-      setFill(rounded);
+      // Direct DOM manipulation for maximum performance
+      const val = displayFillRef.current;
+      const rounded = Math.round(val);
+      
+      if (waveRef.current) {
+        waveRef.current.style.transform = `translateY(${126 - (val / 100) * 138}px)`;
+      }
+      if (shadowRef.current) {
+        shadowRef.current.style.filter = `drop-shadow(0 0 ${14 + val * 0.5}px hsl(210 25% 80% / ${0.2 + val * 0.006}))`;
+      }
+      if (labelRef.current) {
+        if (val >= 100) {
+          labelRef.current.textContent = "Launching…";
+        } else if (val > 2) {
+          labelRef.current.textContent = `${rounded}% · ${next ? next.word : "Orbit"}`;
+        } else {
+          labelRef.current.textContent = letter.word;
+        }
+      }
+      
+      if (val > 2 && !isChargedRef.current) {
+        isChargedRef.current = true;
+        setIsCharged(true);
+      } else if (val <= 2 && isChargedRef.current) {
+        isChargedRef.current = false;
+        setIsCharged(false);
+      }
 
       // Fire transition at 100%
-      if (rounded >= 100 && !firedRef.current) {
+      if (val >= 100 && !firedRef.current) {
         firedRef.current = true;
         setTimeout(() => go(next ? next.id : "home"), 320);
       }
@@ -117,13 +146,10 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [letterIdx, go, next]);
 
   if (!letter) return null;
-  const waveY = 126 - (fill / 100) * 138;
-  const charged = fill > 2;
 
   return (
     <motion.div
@@ -136,15 +162,16 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
       <motion.button
         onClick={() => !firedRef.current && go(next ? next.id : "home")}
         className="flex flex-col items-center outline-none"
-        animate={{ y: [0, -14, 0], rotate: charged ? 0 : [-3, 3, -3] }}
+        animate={{ y: [0, -14, 0], rotate: isCharged ? 0 : [-3, 3, -3] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         aria-label={next ? `Continue to ${next.word}` : "Return to the orbit"}
         data-testid="companion-next-button"
       >
         <svg
+          ref={shadowRef}
           viewBox="-6 -6 92 132"
           className="companion-letter w-[54px] sm:w-[88px] lg:w-[110px]"
-          style={{ filter: `drop-shadow(0 0 ${14 + fill * 0.5}px hsl(210 25% 80% / ${0.2 + fill * 0.006}))` }}
+          style={{ filter: `drop-shadow(0 0 14px hsl(210 25% 80% / 0.2))` }}
           data-testid="companion-fill-svg"
         >
           <defs>
@@ -157,9 +184,8 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
             </linearGradient>
           </defs>
           <g clipPath={`url(#glyph-clip-${letter.char})`}>
-            <g style={{
-              transform: `translateY(${waveY}px)`,
-              transition: "transform 0.15s ease-out",
+            <g ref={waveRef} style={{
+              transform: `translateY(126px)`,
               willChange: "transform",
             }}>
               <path
@@ -173,12 +199,8 @@ export const ScrollFillCompanion = ({ letterIdx }) => {
           <path d={LETTER_PATHS[letter.char]} style={{ fill: "hsl(var(--primary) / 0.05)" }} />
         </svg>
 
-        <span className="mt-3 hidden whitespace-nowrap font-mono-tech text-[9px] uppercase tracking-[0.3em] text-primary/60 sm:block" data-testid="companion-fill-label">
-          {fill >= 100
-            ? "Launching…"
-            : charged
-              ? `${Math.round(fill)}% · ${next ? next.word : "Orbit"}`
-              : letter.word}
+        <span ref={labelRef} className="mt-3 hidden whitespace-nowrap font-mono-tech text-[9px] uppercase tracking-[0.3em] text-primary/60 sm:block" data-testid="companion-fill-label">
+          {letter.word}
         </span>
       </motion.button>
     </motion.div>

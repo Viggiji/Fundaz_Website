@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { LetterPageShell, PageSection, SectionKicker, fadeUp } from "@/components/LetterPageShell";
 import { RegisterDialog } from "@/components/RegisterDialog";
 import { NOW_EVENTS, NOW_GLANCE } from "@/data/content";
+import DomeGallery from "@/components/DomeGallery";
 
 const typeStyles = {
   Flagship: "border-primary/60 text-primary",
@@ -81,6 +82,22 @@ export default function NowPage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      </PageSection>
+
+      <PageSection data-testid="now-team" className="max-w-none px-0 sm:px-0 pt-20">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 mb-10 text-center">
+          <SectionKicker>The People Behind It</SectionKicker>
+          <h2 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">
+            This Year's Team
+          </h2>
+        </div>
+        <div style={{ width: '100%', height: '80vh', position: 'relative' }}>
+          <DomeGallery 
+            minRadius={400}
+            segments={28}
+            grayscale={false}
+          />
         </div>
       </PageSection>
 

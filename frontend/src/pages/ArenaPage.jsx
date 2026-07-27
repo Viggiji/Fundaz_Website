@@ -61,6 +61,9 @@ export default function ArenaPage() {
               </motion.div>
               <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="mt-10">
                 <p className="font-mono-tech text-[10px] uppercase tracking-[0.3em] text-accent">Through the years</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Across previous editions, this activity evolved with new twists and themes, continuously adapting to deliver the ultimate participant experience.
+                </p>
                 <div className="mt-4 flex flex-col gap-3">
                   {act.years.map((y) => (
                     <div key={y.year} className="flex items-baseline gap-4 text-sm">
