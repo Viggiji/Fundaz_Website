@@ -1,5 +1,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Guest button */
+.auth-gate-guest-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    border: 1px dashed hsl(var(--border));
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.auth-gate-guest-btn:hover {
+    border-color: hsl(var(--primary) / 0.35);
+    color: hsl(var(--foreground));
+    background: hsl(var(--secondary) / 0.3);
+}
+.auth-gate-guest-icon {
+    font-size: 14px;
+    opacity: 0.7;
+}
+.auth-gate-guest-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    position: absolute;
+    right: 12px;
+}
+
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -251,7 +292,333 @@
     animation-play-state: paused;
 }
 
+/* ---------- Landing hint overlay ---------- */
+.landing-hint-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    background: hsl(220, 12%, 4%, 0.72);
+    backdrop-filter: blur(14px) saturate(0.8);
+    -webkit-backdrop-filter: blur(14px) saturate(0.8);
+    cursor: pointer;
+}
+
+.landing-hint-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: hsl(210, 14%, 70%);
+    pointer-events: none;
+    text-align: center;
+}
+
+/* ---------- Auth Gate Page ---------- */
+.auth-gate-root {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+    background: hsl(var(--background));
+    overflow: hidden;
+}
+
+/* Decorative large letter paths in background */
+.auth-gate-deco {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.auth-gate-deco-letter {
+    position: absolute;
+    opacity: 0.04;
+    fill: none;
+    stroke: hsl(var(--primary));
+    stroke-width: 1.5px;
+}
+.auth-gate-deco-f {
+    width: 420px;
+    top: -60px;
+    left: -80px;
+    transform: rotate(-18deg);
+}
+.auth-gate-deco-z {
+    width: 380px;
+    bottom: -80px;
+    right: -60px;
+    transform: rotate(12deg);
+}
+
+/* Main card */
+.auth-gate-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(20px) saturate(1.1);
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
+    border: 1px solid hsl(var(--border) / 0.8);
+    border-radius: 20px;
+    padding: 2rem 2rem 2.5rem;
+    box-shadow:
+        0 0 0 1px hsl(var(--primary) / 0.06),
+        0 32px 64px -24px hsl(220, 30%, 2% / 0.9),
+        0 0 80px -20px hsl(210, 25%, 80% / 0.07);
+}
+
+/* Brand header */
+.auth-gate-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.75rem;
+}
+.auth-gate-nucleus {
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    border: 1.5px solid hsl(var(--primary) / 0.55);
+    background: hsl(var(--secondary) / 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: hsl(var(--silver-bright));
+    box-shadow: 0 0 20px hsl(210 25% 80% / 0.15);
+    flex-shrink: 0;
+}
+.auth-gate-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    background: linear-gradient(120deg, hsl(210, 22%, 93%) 0%, hsl(212, 12%, 60%) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+.auth-gate-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+    margin: 2px 0 0;
+}
+
+/* Tabs */
+.auth-gate-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: hsl(var(--secondary) / 0.6);
+    border: 1px solid hsl(var(--border));
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 1.25rem;
+}
+.auth-gate-tab {
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.auth-gate-tab--active {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 2px 8px hsl(210, 25%, 80% / 0.18);
+}
+.auth-gate-tab:hover:not(.auth-gate-tab--active) {
+    color: hsl(var(--foreground));
+}
+
+/* Google button */
+.auth-gate-google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--secondary) / 0.5);
+    color: hsl(var(--foreground));
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    position: relative;
+    margin-bottom: 1.2rem;
+}
+.auth-gate-google-btn:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    background: hsl(var(--secondary) / 0.8);
+}
+.auth-gate-google-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.auth-gate-google-badge {
+    position: absolute;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+    border: 1px solid hsl(var(--border));
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+/* Divider */
+.auth-gate-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+}
+.auth-gate-divider span {
+    flex: 1;
+    height: 1px;
+    background: hsl(var(--border));
+}
+.auth-gate-divider p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* Form */
+.auth-gate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.auth-gate-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+.auth-gate-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.auth-gate-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+}
+.auth-gate-input {
+    background: hsl(var(--input) / 0.6);
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    padding: 0.52rem 0.75rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    color: hsl(var(--foreground));
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+.auth-gate-input::placeholder {
+    color: hsl(var(--muted-foreground) / 0.6);
+}
+.auth-gate-input:focus {
+    border-color: hsl(var(--primary) / 0.6);
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+.auth-gate-input--error {
+    border-color: hsl(var(--destructive) / 0.7);
+}
+.auth-gate-error {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: hsl(var(--destructive));
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+/* Submit button */
+.auth-gate-submit {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid hsl(var(--primary) / 0.5);
+    background: linear-gradient(135deg, hsl(210, 18%, 84%), hsl(213, 11%, 58%));
+    color: hsl(var(--primary-foreground));
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    box-shadow: 0 2px 12px hsl(210, 25%, 80% / 0.18);
+}
+.auth-gate-submit:hover:not(:disabled) {
+    box-shadow: 0 4px 20px hsl(210, 25%, 80% / 0.3);
+    transform: translateY(-1px);
+}
+.auth-gate-submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Switch link */
+.auth-gate-switch {
+    text-align: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    margin: 0.2rem 0 0;
+}
+.auth-gate-switch button {
+    background: none;
+    border: none;
+    color: hsl(var(--primary));
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 /* ---------- Misc ---------- */
+
+
 .section-ghost-letter {
     -webkit-text-stroke: 1px hsl(var(--primary) / 0.12);
     color: transparent;

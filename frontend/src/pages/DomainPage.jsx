@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { gsap } from "gsap";
 import { motion } from "framer-motion";
 import { CalendarDays, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,48 +11,180 @@ import { DOMAIN_EVENTS, IMAGES } from "@/data/content";
 import { useTransitionNav } from "@/components/PageTransition";
 
 /*
-  Round image area — currently a simple <img> with cross-fade transitions.
-  REPLACE WITH REACT IMAGE LIBRARY (e.g. react-image-gallery, swiper, embla-carousel)
-  when ready. The activeRound state drives which image is shown.
+  PixelCycleViewer — 3-state pixel transition image viewer.
+  State 0 (default): shows photo 1 (current round)
+  State 1 (hovered): pixel-transitions to photo 2 (next round)
+  State 2 (clicked while hovered): pixel-transitions to photo 3 (round after next)
+  Mouse leave from state 1 or 2: pixel-transitions back to photo 1
 */
-const RoundImageViewer = ({ rounds, activeRound }) => {
-  const currentRound = rounds[activeRound];
-  if (!currentRound?.image) return null;
+
+const GRID_SIZE = 12;
+const STEP_DURATION = 0.4;
+const PIXEL_COLOR = 'hsl(220, 12%, 5%)';
+
+const PixelCycleViewer = ({ rounds, activeRound }) => {
+  const containerRef = useRef(null);
+  const pixelGridRef = useRef(null);
+  const delayedCallRef = useRef(null);
+  const stateRef = useRef(0);          // tracks current state without re-renders
+  const [displayState, setDisplayState] = useState(0); // drives badge/dots UI
+
+  const img0 = rounds[activeRound % rounds.length];
+  const img1 = rounds[(activeRound + 1) % rounds.length];
+  const img2 = rounds[(activeRound + 2) % rounds.length];
+  const images = [img0, img1, img2];
+
+  // Build the pixel grid on mount
+  useEffect(() => {
+    const grid = pixelGridRef.current;
+    if (!grid) return;
+    grid.innerHTML = '';
+    const s = 100 / GRID_SIZE;
+    for (let row = 0; row < GRID_SIZE; row++) {
+      for (let col = 0; col < GRID_SIZE; col++) {
+        const px = document.createElement('div');
+        px.className = 'pvcycle-pixel';
+        px.style.cssText = `position:absolute;background:${PIXEL_COLOR};width:${s}%;height:${s}%;left:${col * s}%;top:${row * s}%;display:none;`;
+        grid.appendChild(px);
+      }
+    }
+  }, []);
+
+  // Core transition: animate pixels, then swap the visible layer
+  const runTransition = useCallback((toState) => {
+    if (stateRef.current === toState) return;
+
+    const grid = pixelGridRef.current;
+    const container = containerRef.current;
+    if (!grid || !container) return;
+
+    const pixels = grid.querySelectorAll('.pvcycle-pixel');
+    if (!pixels.length) return;
+
+    // Kill any in-progress animation
+    gsap.killTweensOf(pixels);
+    if (delayedCallRef.current) delayedCallRef.current.kill();
+
+    gsap.set(pixels, { display: 'none' });
+    const stagger = STEP_DURATION / pixels.length;
+
+    // Phase 1: pixels appear in random order
+    gsap.to(pixels, {
+      display: 'block',
+      duration: 0,
+      stagger: { each: stagger, from: 'random' }
+    });
+
+    // Halfway through: swap the visible image layer
+    delayedCallRef.current = gsap.delayedCall(STEP_DURATION, () => {
+      stateRef.current = toState;
+      setDisplayState(toState);
+      const layers = container.querySelectorAll('.pvcycle-layer');
+      layers.forEach((layer, i) => {
+        layer.style.display = i === toState ? 'block' : 'none';
+      });
+    });
+
+    // Phase 2: pixels disappear in random order
+    gsap.to(pixels, {
+      display: 'none',
+      duration: 0,
+      delay: STEP_DURATION,
+      stagger: { each: stagger, from: 'random' }
+    });
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    // Only transition if currently at default state
+    if (stateRef.current === 0) runTransition(1);
+  }, [runTransition]);
+
+  const handleMouseLeave = useCallback(() => {
+    // Always reset to default on leave, regardless of state
+    if (stateRef.current !== 0) runTransition(0);
+  }, [runTransition]);
+
+  const handleClick = useCallback(() => {
+    // Only advance to state 2 when currently in state 1 (hovering)
+    if (stateRef.current === 1) runTransition(2);
+  }, [runTransition]);
+
+  const handleTouchStart = useCallback((e) => {
+    e.preventDefault();
+    if (stateRef.current === 0) runTransition(1);
+    else if (stateRef.current === 1) runTransition(2);
+    else runTransition(0);
+  }, [runTransition]);
+
+  if (!img0?.image) return null;
 
   return (
-    <div className="relative mb-10 h-[280px] overflow-hidden rounded-xl shadow-elegant md:h-[360px]">
-      {rounds.map((r, i) => (
-        <img
-          key={i}
-          src={r.image}
-          alt={r.name}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{
-            opacity: i === activeRound ? 1 : 0,
-            transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-          loading="lazy"
+    <div className="relative mb-10 h-[240px] overflow-hidden rounded-xl md:h-[320px]">
+      <div
+        ref={containerRef}
+        style={{ width: '100%', height: '100%', position: 'relative', cursor: 'pointer' }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+      >
+        {/* 3 image layers — only the active one is visible */}
+        {images.map((r, i) => (
+          <img
+            key={i}
+            className="pvcycle-layer"
+            src={r.image}
+            alt={r.name}
+            style={{
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              objectFit: 'cover',
+              display: i === 0 ? 'block' : 'none',
+            }}
+            draggable={false}
+          />
+        ))}
+
+        {/* Bottom gradient */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }} />
+
+        {/* Pixel grid (sits on top of images, under badge overlay) */}
+        <div
+          ref={pixelGridRef}
+          style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }}
         />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/30" />
-      <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
-        <Badge className="bg-background/60 font-mono-tech text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur">
-          {currentRound.day} · {currentRound.date}
-        </Badge>
-        <div className="flex gap-1.5">
-          {rounds.map((_, i) => (
-            <span
-              key={i}
-              className="h-1.5 rounded-full"
-              style={{
-                width: i === activeRound ? 24 : 6,
-                background: i === activeRound
-                  ? "hsl(var(--primary))"
-                  : "hsl(var(--primary) / 0.3)",
-                transition: "width 0.3s ease, background 0.3s ease",
-              }}
-            />
-          ))}
+
+        {/* Badge + progress dots */}
+        <div style={{
+          position: 'absolute', bottom: 16, left: 20, right: 20,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          pointerEvents: 'none', zIndex: 4,
+        }}>
+          <Badge className="bg-background/60 font-mono-tech text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur">
+            {images[displayState].day} · {images[displayState].date}
+          </Badge>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {images.map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  display: 'block',
+                  height: 6,
+                  borderRadius: 9999,
+                  width: displayState === i ? 24 : 6,
+                  background: displayState === i
+                    ? 'hsl(var(--primary))'
+                    : 'hsl(var(--primary) / 0.3)',
+                  transition: 'width 0.3s ease, background 0.3s ease',
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -102,9 +235,10 @@ export default function DomainPage() {
                 <h2 className="mt-5 font-display text-3xl font-bold text-foreground">{ev.name}</h2>
                 <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground md:text-base">{ev.description}</p>
 
-                {/* Round image viewer — swap with a React carousel library later */}
+                {/* 3-state pixel-transition image viewer */}
                 <div className="mt-10">
-                  <RoundImageViewer
+                  <PixelCycleViewer
+                    key={`${ev.id}-${activeRounds[ev.id] || 0}`}
                     rounds={ev.rounds}
                     activeRound={activeRounds[ev.id] || 0}
                   />

@@ -9,9 +9,11 @@ import { createContext, useCallback, useContext, useState } from "react";
 const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
+  isGuest: false,
   signup: async () => {},
   login: async () => {},
   logout: () => {},
+  loginAsGuest: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -51,6 +53,8 @@ export const AuthProvider = ({ children }) => {
 
     // Set current user (without password)
     localStorage.setItem("fundaz_user", JSON.stringify(newUser));
+    // Ensure the preloader fires when the site first opens after signup
+    sessionStorage.removeItem("fz_preloaded");
     setUser(newUser);
     return newUser;
   }, []);
@@ -68,8 +72,16 @@ export const AuthProvider = ({ children }) => {
     }
     const { password, ...userWithoutPw } = found;
     localStorage.setItem("fundaz_user", JSON.stringify(userWithoutPw));
+    // Ensure the preloader fires when the site first opens after login
+    sessionStorage.removeItem("fz_preloaded");
     setUser(userWithoutPw);
     return userWithoutPw;
+  }, []);
+
+  const loginAsGuest = useCallback(() => {
+    const guest = { id: "guest", name: "Guest", isGuest: true };
+    sessionStorage.removeItem("fz_preloaded");
+    setUser(guest);
   }, []);
 
   const logout = useCallback(() => {
@@ -82,9 +94,11 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        isGuest: user?.isGuest === true,
         signup,
         login,
         logout,
+        loginAsGuest,
       }}
     >
       {children}
