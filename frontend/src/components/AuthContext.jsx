@@ -1,91 +1,112 @@
-import { createContext, useCallback, useContext, useState } from "react";
-
-/*
-  Auth context — placeholder implementation using localStorage.
-  Replace with real backend auth (JWT, OAuth, etc.) when ready.
-  The storage device and auth backend will be provided later.
-*/
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { auth, db } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
   isGuest: false,
+  loading: true,
   signup: async () => {},
   login: async () => {},
-  logout: () => {},
+  loginWithGoogle: async () => {},
+  completeGoogleProfile: async () => {},
+  logout: async () => {},
   loginAsGuest: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem("fundaz_user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Monitor auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Fetch extra profile data from firestore
+        const docRef = doc(db, "users", firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setUser({ ...firebaseUser, ...docSnap.data(), isGuest: false, needsProfile: false });
+        } else {
+          // If no doc exists, they might have just logged in with Google for the first time
+          setUser({ ...firebaseUser, isGuest: false, needsProfile: true });
+        }
+      } else {
+        // Check if guest
+        const storedGuest = sessionStorage.getItem("fz_guest");
+        if (storedGuest) {
+          setUser({ id: "guest", name: "Guest", isGuest: true });
+        } else {
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const signup = useCallback(async (userData) => {
-    // PLACEHOLDER — store in localStorage, no backend call yet
-    const newUser = {
-      id: `user_${Date.now()}`,
-      name: userData.name,
-      email: userData.email,
-      regNo: userData.regNo,
-      phone: userData.phone,
-      course: userData.course,
+    const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+    const { password, confirmPassword, ...profileData } = userData;
+    
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      ...profileData,
       createdAt: new Date().toISOString(),
-    };
-
-    // Save to localStorage list of users (for login check)
-    const users = JSON.parse(localStorage.getItem("fundaz_users") || "[]");
-    const exists = users.find(
-      (u) => u.email === newUser.email || u.regNo === newUser.regNo
-    );
-    if (exists) {
-      throw new Error("An account with this email or registration number already exists.");
-    }
-    users.push({ ...newUser, password: userData.password });
-    localStorage.setItem("fundaz_users", JSON.stringify(users));
-
-    // Set current user (without password)
-    localStorage.setItem("fundaz_user", JSON.stringify(newUser));
-    // Ensure the preloader fires when the site first opens after signup
+    });
+    
     sessionStorage.removeItem("fz_preloaded");
-    setUser(newUser);
-    return newUser;
+    return userCredential.user;
   }, []);
 
   const login = useCallback(async (credentials) => {
-    // PLACEHOLDER — check against localStorage
-    const users = JSON.parse(localStorage.getItem("fundaz_users") || "[]");
-    const found = users.find(
-      (u) =>
-        (u.email === credentials.identifier || u.regNo === credentials.identifier) &&
-        u.password === credentials.password
-    );
-    if (!found) {
-      throw new Error("Invalid credentials. Please check your email/registration number and password.");
-    }
-    const { password, ...userWithoutPw } = found;
-    localStorage.setItem("fundaz_user", JSON.stringify(userWithoutPw));
-    // Ensure the preloader fires when the site first opens after login
+    // Note: Since Firebase Auth uses email, users must enter their email as identifier.
+    const userCredential = await signInWithEmailAndPassword(auth, credentials.identifier, credentials.password);
     sessionStorage.removeItem("fz_preloaded");
-    setUser(userWithoutPw);
-    return userWithoutPw;
+    return userCredential.user;
+  }, []);
+
+  const loginWithGoogle = useCallback(async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    sessionStorage.removeItem("fz_preloaded");
+    return result.user;
+  }, []);
+
+  const completeGoogleProfile = useCallback(async (additionalData) => {
+    if (!auth.currentUser) throw new Error("No authenticated user");
+    
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
+      ...additionalData,
+      createdAt: new Date().toISOString(),
+    });
+    
+    // Update local state to reflect complete profile
+    setUser((prev) => ({ ...prev, ...additionalData, needsProfile: false }));
   }, []);
 
   const loginAsGuest = useCallback(() => {
     const guest = { id: "guest", name: "Guest", isGuest: true };
+    sessionStorage.setItem("fz_guest", "true");
     sessionStorage.removeItem("fz_preloaded");
     setUser(guest);
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("fundaz_user");
+  const logout = useCallback(async () => {
+    await signOut(auth);
+    sessionStorage.removeItem("fz_guest");
     setUser(null);
   }, []);
 
@@ -95,13 +116,16 @@ export const AuthProvider = ({ children }) => {
         user,
         isAuthenticated: !!user,
         isGuest: user?.isGuest === true,
+        loading,
         signup,
         login,
+        loginWithGoogle,
+        completeGoogleProfile,
         logout,
         loginAsGuest,
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

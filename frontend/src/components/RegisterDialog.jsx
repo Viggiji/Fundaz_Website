@@ -38,6 +38,8 @@ export const RegisterDialog = ({ event, open, onOpenChange }) => {
   const [members, setMembers] = useState([{ ...EMPTY_MEMBER }]);
   const [errors, setErrors] = useState({});
 
+  const [loading, setLoading] = useState(false);
+
   // Team lead is pre-filled from logged-in user
   const teamLead = user
     ? { name: user.name, email: user.email, regNo: user.regNo, course: user.course || "" }
@@ -77,36 +79,45 @@ export const RegisterDialog = ({ event, open, onOpenChange }) => {
     return Object.keys(errs).length === 0;
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    
+    setLoading(true);
+    try {
+      const registration = {
+        eventId: event?.id,
+        eventName: event?.name,
+        teamName,
+        teamSize,
+        teamLead,
+        members,
+        registeredBy: user?.uid || user?.id || "guest",
+        at: new Date().toISOString(),
+      };
 
-    // PLACEHOLDER — store in localStorage
-    const registration = {
-      eventId: event?.id,
-      eventName: event?.name,
-      teamName,
-      teamSize,
-      teamLead,
-      members,
-      registeredBy: user?.id,
-      at: new Date().toISOString(),
-    };
+      // Write directly to Firestore in a collection specific to the Domain Event (DE)
+      const collectionName = `registrations_${event?.id || 'unknown'}`;
+      const { collection, addDoc } = await import("firebase/firestore");
+      const { db } = await import("../firebase");
+      
+      await addDoc(collection(db, collectionName), registration);
 
-    const existing = JSON.parse(localStorage.getItem("fundaz_event_registrations") || "[]");
-    existing.push(registration);
-    localStorage.setItem("fundaz_event_registrations", JSON.stringify(existing));
+      toast.success(`Team "${teamName}" registered for ${event?.name}`, {
+        description: `${teamSize} member${teamSize > 1 ? "s" : ""} locked in. See you at the arena.`,
+      });
 
-    toast.success(`Team "${teamName}" registered for ${event?.name}`, {
-      description: `${teamSize} member${teamSize > 1 ? "s" : ""} locked in. See you at the arena.`,
-    });
-
-    // Reset form
-    setTeamName("");
-    setTeamSize(2);
-    setMembers([{ ...EMPTY_MEMBER }]);
-    setErrors({});
-    onOpenChange(false);
+      // Reset form
+      setTeamName("");
+      setTeamSize(2);
+      setMembers([{ ...EMPTY_MEMBER }]);
+      setErrors({});
+      onOpenChange(false);
+    } catch (err) {
+      toast.error("Registration failed", { description: err.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // If not logged in, intercept and show auth dialog
@@ -239,11 +250,11 @@ export const RegisterDialog = ({ event, open, onOpenChange }) => {
           ))}
 
           <DialogFooter className="mt-2">
-            <Button type="button" variant="ghostSilver" onClick={() => onOpenChange(false)} data-testid="reg-cancel">
+            <Button type="button" variant="ghostSilver" onClick={() => onOpenChange(false)} data-testid="reg-cancel" disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" variant="silver" data-testid="reg-submit">
-              Confirm Registration
+            <Button type="submit" variant="silver" data-testid="reg-submit" disabled={loading}>
+              {loading ? "Registering..." : "Confirm Registration"}
             </Button>
           </DialogFooter>
         </form>
