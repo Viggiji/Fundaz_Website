@@ -159,18 +159,7 @@ export default function AuthGatePage() {
         {/* Hide regular tabs and Google if they just need to complete profile */}
         {!user?.needsProfile && (
           <>
-            {/* Guest access */}
-            <button
-              className="auth-gate-guest-btn"
-              onClick={loginAsGuest}
-              type="button"
-              data-testid="auth-gate-guest-btn"
-              disabled={loading}
-            >
-              <span className="auth-gate-guest-icon">👁</span>
-              Continue as Guest
-              <span className="auth-gate-guest-note">browse only · no registration</span>
-            </button>
+
 
             {/* Tab switcher */}
             <div className="auth-gate-tabs" role="tablist">

@@ -19,9 +19,9 @@ import AuthGatePage from "@/pages/AuthGatePage";
   - Authenticated     → normal site with preloader → landing
 */
 function AppShell() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.needsProfile) {
     return (
       <>
         <AuthGatePage />

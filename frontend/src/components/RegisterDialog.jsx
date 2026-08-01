@@ -98,9 +98,22 @@ export const RegisterDialog = ({ event, open, onOpenChange }) => {
 
       // Write directly to Firestore in a collection specific to the Domain Event (DE)
       const collectionName = `registrations_${event?.id || 'unknown'}`;
-      const { collection, addDoc } = await import("firebase/firestore");
+      const { collection, addDoc, getDocs, query, where } = await import("firebase/firestore");
       const { db } = await import("../firebase");
       
+      const userId = user?.uid || user?.id || "guest";
+
+      // Check for duplicate registration by this user for THIS specific event
+      if (userId !== "guest") {
+        const q = query(collection(db, collectionName), where("registeredBy", "==", userId));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          toast.error("Already registered", { description: "You have already registered a team for this event." });
+          setLoading(false);
+          return;
+        }
+      }
+
       await addDoc(collection(db, collectionName), registration);
 
       toast.success(`Team "${teamName}" registered for ${event?.name}`, {

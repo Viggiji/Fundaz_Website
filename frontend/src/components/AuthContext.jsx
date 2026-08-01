@@ -20,7 +20,6 @@ const AuthContext = createContext({
   loginWithGoogle: async () => {},
   completeGoogleProfile: async () => {},
   logout: async () => {},
-  loginAsGuest: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -33,24 +32,27 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Fetch extra profile data from firestore
-        const docRef = doc(db, "users", firebaseUser.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setUser({ ...firebaseUser, ...docSnap.data(), isGuest: false, needsProfile: false });
-        } else {
-          // If no doc exists, they might have just logged in with Google for the first time
-          setUser({ ...firebaseUser, isGuest: false, needsProfile: true });
-        }
-      } else {
-        // Check if guest
-        const storedGuest = sessionStorage.getItem("fz_guest");
-        if (storedGuest) {
-          setUser({ id: "guest", name: "Guest", isGuest: true });
-        } else {
+        try {
+          // Slight delay to prevent race condition if they just signed up via Email/Password
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
+          // Fetch extra profile data from firestore
+          const docRef = doc(db, "users", firebaseUser.uid);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            setUser({ ...firebaseUser, ...docSnap.data(), isGuest: false, needsProfile: false });
+          } else {
+            // If no doc exists, they might have just logged in with Google for the first time
+            setUser({ ...firebaseUser, isGuest: false, needsProfile: true });
+          }
+        } catch (error) {
+          console.error("Error fetching user data from Firestore:", error);
+          // If Firestore is not enabled or permission denied, sign out so they don't get stuck
+          await signOut(auth);
           setUser(null);
         }
+        setUser(null);
       }
       setLoading(false);
     });
@@ -97,16 +99,10 @@ export const AuthProvider = ({ children }) => {
     setUser((prev) => ({ ...prev, ...additionalData, needsProfile: false }));
   }, []);
 
-  const loginAsGuest = useCallback(() => {
-    const guest = { id: "guest", name: "Guest", isGuest: true };
-    sessionStorage.setItem("fz_guest", "true");
-    sessionStorage.removeItem("fz_preloaded");
-    setUser(guest);
-  }, []);
+
 
   const logout = useCallback(async () => {
     await signOut(auth);
-    sessionStorage.removeItem("fz_guest");
     setUser(null);
   }, []);
 
@@ -122,7 +118,6 @@ export const AuthProvider = ({ children }) => {
         loginWithGoogle,
         completeGoogleProfile,
         logout,
-        loginAsGuest,
       }}
     >
       {!loading && children}
